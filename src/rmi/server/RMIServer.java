@@ -32,67 +32,67 @@ public class RMIServer implements Server {
         shutdown = false;
         threadShutdown = false;
         UnicastRemoteObject.exportObject(this, 0);
-        broadcastExistance();
+//        broadcastExistance();
     }
 
-    public void broadcastExistance() {
-
-        try {
-            datagramSocket = new DatagramSocket(11000);
-            datagramSocket.setSoTimeout(20);
-            broadcastThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    byte[] buffer;
-                    while (!shutdown) {
-                        try {
-                            Enumeration<NetworkInterface> networkInterfaces
-                                    = NetworkInterface.getNetworkInterfaces();
-                            while (networkInterfaces.hasMoreElements()) {
-                                NetworkInterface networkInterface = networkInterfaces.nextElement();
-                                if (networkInterface.isLoopback() || !networkInterface.isUp() || !networkInterface.supportsMulticast())
-                                    continue;
-
-                                Iterator<InterfaceAddress> iterator = networkInterface.getInterfaceAddresses().iterator();
-                                while (iterator.hasNext()) {
-                                    InterfaceAddress iaddress = iterator.next();
-                                    InetAddress broadcastAddress = iaddress.getBroadcast();
-                                    if (broadcastAddress != null) {
-                                        InetAddress localAddress = iaddress.getAddress();
-                                        buffer = identifier.getBytes(StandardCharsets.UTF_8);
-                                        try {
-                                            DatagramPacket packet = new DatagramPacket(
-                                                    buffer, buffer.length, broadcastAddress, 11001
-                                            );
-                                            datagramSocket.send(packet);
-
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-
-                                        }
-                                    }
-                                }
-
-                            }
-                        } catch (SocketException ignored) {
-                        }
-
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException ignored) {
-                        }
-                    }
-                    datagramSocket.close();
-                    threadShutdown = true;
-
-                }
-            });
-            broadcastThread.start();
-
-        } catch (SocketException e) {
-            System.out.println("Broadcast Socket Creation exception");
-        }
-    }
+//    public void broadcastExistance() {
+//
+//        try {
+//            datagramSocket = new DatagramSocket(11000);
+//            datagramSocket.setSoTimeout(20);
+//            broadcastThread = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    byte[] buffer;
+//                    while (!shutdown) {
+//                        try {
+//                            Enumeration<NetworkInterface> networkInterfaces
+//                                    = NetworkInterface.getNetworkInterfaces();
+//                            while (networkInterfaces.hasMoreElements()) {
+//                                NetworkInterface networkInterface = networkInterfaces.nextElement();
+//                                if (networkInterface.isLoopback() || !networkInterface.isUp() || !networkInterface.supportsMulticast())
+//                                    continue;
+//
+//                                Iterator<InterfaceAddress> iterator = networkInterface.getInterfaceAddresses().iterator();
+//                                while (iterator.hasNext()) {
+//                                    InterfaceAddress iaddress = iterator.next();
+//                                    InetAddress broadcastAddress = iaddress.getBroadcast();
+//                                    if (broadcastAddress != null) {
+//                                        InetAddress localAddress = iaddress.getAddress();
+//                                        buffer = identifier.getBytes(StandardCharsets.UTF_8);
+//                                        try {
+//                                            DatagramPacket packet = new DatagramPacket(
+//                                                    buffer, buffer.length, broadcastAddress, 11001
+//                                            );
+//                                            datagramSocket.send(packet);
+//
+//                                        } catch (IOException e) {
+//                                            e.printStackTrace();
+//
+//                                        }
+//                                    }
+//                                }
+//
+//                            }
+//                        } catch (SocketException ignored) {
+//                        }
+//
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException ignored) {
+//                        }
+//                    }
+//                    datagramSocket.close();
+//                    threadShutdown = true;
+//
+//                }
+//            });
+//            broadcastThread.start();
+//
+//        } catch (SocketException e) {
+//            System.out.println("Broadcast Socket Creation exception");
+//        }
+//    }
 
     @Override
     public String getIdentifier() throws RemoteException {
@@ -148,9 +148,9 @@ public class RMIServer implements Server {
         try {
             for (ClientDecorator client : clients) {
 
-                String clientName = client.getName();
+                String clientIdentifier = client.getIdentifier();
 
-                if (!clientName.equals(doNotBroadcastToClient)) {
+                if (!clientIdentifier.equals(doNotBroadcastToClient)) {
                     try {
                         client.getClient().onStartPauseResumePressed(identifier);
                     } catch (RemoteException e) {
@@ -177,9 +177,9 @@ public class RMIServer implements Server {
         try {
             for (ClientDecorator client : clients) {
 
-                String clientName = client.getName();
+                String clientIdentifier = client.getIdentifier();
 
-                if (!clientName.equals(doNotBroadcastToClient)) {
+                if (!clientIdentifier.equals(doNotBroadcastToClient)) {
                     try {
                         client.getClient().onStopPressed(identifier);
                     } catch (RemoteException e) {
@@ -192,10 +192,10 @@ public class RMIServer implements Server {
 
     public void shutdown() {
         shutdown = true;
-        try {
-            broadcastThread.join();
-        } catch (InterruptedException e) {
-        }
+//        try {
+//            broadcastThread.join();
+//        } catch (InterruptedException e) {
+//        }
         try {
             for (ClientDecorator client : clients) {
                 try {

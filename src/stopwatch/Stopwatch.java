@@ -121,16 +121,16 @@ public class Stopwatch implements Observer, VirtualStopwatchClient {
 
 
 
-    public void remoteStartPressed(String clientName) {
+    public void remoteStartPressed(String clientIdentifier) {
         currentState.execute();
-        context.notifyServerStartPauseResumePressed(clientName);
+        context.notifyServerStartPauseResumePressed(clientIdentifier);
     }
 
-    public void remoteStopPressed(String clientName) {
+    public void remoteStopPressed(String clientIdentifier) {
 
         currentState = stopPressedState;
         currentState.execute();
-        context.notifyServerStopPressed(clientName);
+        context.notifyServerStopPressed(clientIdentifier);
     }
 
     @Override

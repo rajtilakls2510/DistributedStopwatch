@@ -1,6 +1,8 @@
 package rmi.client;
 
+import main.Indexer;
 import rmi.shared.Client;
+import rmi.shared.IndexServer;
 import rmi.shared.Server;
 import rmi.shared.VirtualStopwatch;
 import ui.ApplicationController;
@@ -9,18 +11,21 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.List;
 
 public class RMIClient implements Client {
 
+
+    transient IndexServer indexServer;
     transient ApplicationController context;
     public String name;
     public String identifier;
-    transient ArrayList<String> serverIdentifiers;
     transient ArrayList<ServerDecorator> servers;
     transient boolean shutdown, threadShutdown;
     transient Thread receivingThread;
@@ -28,7 +33,6 @@ public class RMIClient implements Client {
 
     public RMIClient(String identifier, ApplicationController context) throws RemoteException {
 
-        serverIdentifiers = new ArrayList<>();
         servers = new ArrayList<>();
         this.context = context;
         shutdown = false;
@@ -38,51 +42,69 @@ public class RMIClient implements Client {
         this.identifier = identifier;
         UnicastRemoteObject.exportObject(this, 0);
 
+
     }
 
-    public void startClient() throws RemoteException, NotBoundException {
-        detectBroadcasts();
-    }
-
-    void detectBroadcasts() {
-        if (!shutdown) {
+    public void startClient(String indexServerIp) {
+        if(!shutdown)
+        {
             try {
-                datagramSocket = new DatagramSocket(11001);
-                datagramSocket.setSoTimeout(20);
+                Registry indexRegistry = LocateRegistry.getRegistry(indexServerIp,Indexer.INDEXER_PORT);
 
-                byte[] receiveData = new byte[256];
-                DatagramPacket receivePacket = new DatagramPacket(receiveData,
-                        receiveData.length);
-                receivingThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (!shutdown) {
-                            try {
-                                datagramSocket.receive(receivePacket);
-                                String remoteIp = new String(receivePacket.getData(), 0,
-                                        receivePacket.getLength());
-                                System.out.println("Remote IP: "+remoteIp);
-                                addServer(remoteIp);
+                indexServer = (IndexServer) indexRegistry.lookup(Indexer.INDEXER_OBJECT_NAME);
 
-                            } catch (IOException e) {
-                            }
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        datagramSocket.close();
-                        threadShutdown = true;
-                    }
+                indexServer.registerPeer(this, identifier);
+                List<String> allPeersIps = indexServer.getAllPeers();
+                for (String peerIp : allPeersIps)
+                    addServer(peerIp);
 
-                });
-                receivingThread.start();
-
-            } catch (IOException e) {
+            } catch (RemoteException e) {
+                System.out.println("Couldn't get index server registry.");
+            } catch (NotBoundException e) {
+                System.out.println("Couldn't get index server object.");
             }
         }
     }
+
+//    void detectBroadcasts() {
+//        if (!shutdown) {
+//            try {
+//                datagramSocket = new DatagramSocket(11001);
+//                datagramSocket.setSoTimeout(20);
+//
+//                byte[] receiveData = new byte[256];
+//                DatagramPacket receivePacket = new DatagramPacket(receiveData,
+//                        receiveData.length);
+//                receivingThread = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        while (!shutdown) {
+//                            try {
+//                                datagramSocket.receive(receivePacket);
+//                                String remoteIp = new String(receivePacket.getData(), 0,
+//                                        receivePacket.getLength());
+//                                System.out.println("Remote IP: "+remoteIp);
+//                                addServer(remoteIp);
+//
+//                            } catch (IOException e) {
+//                            }
+//                            try {
+//                                Thread.sleep(500);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        datagramSocket.close();
+//                        threadShutdown = true;
+//                    }
+//
+//                });
+//                receivingThread.start();
+//
+//            } catch (IOException e) {
+//            }
+//        }
+//    }
 
     void addServer(String ip) throws RemoteException {
         if (!shutdown) {
@@ -97,8 +119,8 @@ public class RMIClient implements Client {
                 {
                     throw new RemoteException();
                 }
-                for (String si : serverIdentifiers) {
-                    if (si.equals(serverIdentifier)) {
+                for (ServerDecorator server_: servers) {
+                    if (server_.getIdentifier().equals(serverIdentifier)) {
                         throw new RemoteException();
                     }
                 }
@@ -111,10 +133,9 @@ public class RMIClient implements Client {
                 try {
                     virtualStopwatch = server.getOwnerStopwatchInstance();
                     state = server.getOwnerStopwatchState();
-                    VirtualStopwatchClientImpl virtualStopwatchClientImpl = new VirtualStopwatchClientImpl(virtualStopwatch, state, name);
+                    VirtualStopwatchClientImpl virtualStopwatchClientImpl = new VirtualStopwatchClientImpl(virtualStopwatch, state, serverDecorator.getIdentifier());
                     context.addVirtualStopwatch(virtualStopwatchClientImpl, serverDecorator.getIdentifier());
                     servers.add(serverDecorator);
-                    serverIdentifiers.add(serverIdentifier);
                     server.registerClient(this, identifier);
                 } catch (RemoteException e) {
                     System.out.println("Couldn't get remote virtual stopwatch: " + ip);
@@ -125,6 +146,11 @@ public class RMIClient implements Client {
             }
         }
 
+    }
+
+    @Override
+    public void onNewPeer(String ip) throws RemoteException {
+        addServer(ip);
     }
 
     @Override
@@ -152,10 +178,14 @@ public class RMIClient implements Client {
 
         shutdown = true;
 
+//        try {
+//            receivingThread.join();
+//        } catch (InterruptedException e) {
+//        }
+//
         try {
-            receivingThread.join();
-        } catch (InterruptedException e) {
-
+            indexServer.unregisterPeer(identifier);
+        } catch (RemoteException e) {
         }
         for (ServerDecorator server : servers) {
             try {

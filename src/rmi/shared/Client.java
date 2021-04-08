@@ -10,6 +10,7 @@ public interface Client extends Remote {
 
     void onStopPressed(String serverIdentifier) throws RemoteException;
 
-
     void onServerShutdown(String serverIdentifier) throws RemoteException;
+
+    void onNewPeer(String ip) throws RemoteException;
 }

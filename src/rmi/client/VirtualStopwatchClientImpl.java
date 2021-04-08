@@ -2,6 +2,7 @@ package rmi.client;
 
 import rmi.shared.VirtualStopwatch;
 import stopwatch.StopwatchUIUpdater;
+import ui.ApplicationController;
 
 import java.rmi.RemoteException;
 
@@ -19,10 +20,10 @@ public class VirtualStopwatchClientImpl implements VirtualStopwatchClient {
     StopwatchUIUpdater stopwatchUIUpdater;
     String previousState;
 
-    String clientName;
+    String clientIdentifier;
 
-    public VirtualStopwatchClientImpl(VirtualStopwatch stopwatch, String previousState, String clientName) {
-        this.clientName = clientName;
+    public VirtualStopwatchClientImpl(VirtualStopwatch stopwatch, String previousState, String clientIdentifier) {
+        this.clientIdentifier = clientIdentifier;
         sw = stopwatch;
         this.previousState = previousState;
 
@@ -48,7 +49,7 @@ public class VirtualStopwatchClientImpl implements VirtualStopwatchClient {
     @Override
     public void startPauseResume() {
         try {
-            sw.remoteStartPressed(clientName);
+            sw.remoteStartPressed(ApplicationController.hostname);
             currentState.execute();
         } catch (RemoteException e) {
         }
@@ -57,7 +58,7 @@ public class VirtualStopwatchClientImpl implements VirtualStopwatchClient {
     @Override
     public void stop() {
         try {
-            sw.remoteStopPressed(clientName);
+            sw.remoteStopPressed(ApplicationController.hostname);
             currentState = stopPressedState;
             currentState.execute();
         } catch (RemoteException e) {
@@ -105,7 +106,7 @@ public class VirtualStopwatchClientImpl implements VirtualStopwatchClient {
 
 
     public String getName() {
-        return clientName;
+        return clientIdentifier;
     }
 
 

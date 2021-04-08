@@ -15,7 +15,7 @@ import java.rmi.registry.Registry;
 
 public class ApplicationController {
 
-    public static String SERVER_NAME, CLIENT_NAME;
+    public static String SERVER_NAME, CLIENT_NAME, indexServerIp = "", hostname="";
 
     StopwatchView stopwatchView;
     public Stopwatch ownerStopwatchInstance;
@@ -61,18 +61,15 @@ public class ApplicationController {
         }
         System.out.println("Starting Server");
 
-        try {
-            localhostName = InetAddress.getLocalHost().getHostName();
-            System.out.println("Localhost: " + localhostName);
-        } catch (UnknownHostException e) {
-            System.out.println("Localhost not found");
-            System.exit(0);
-        }
-        String hostname = "192.168.29.153";
-        System.out.println(hostname);
+//        try {
+//            localhostName = InetAddress.getLocalHost().getHostName();
+//            System.out.println("Localhost: " + localhostName);
+//        } catch (UnknownHostException e) {
+//            System.out.println("Localhost not found");
+//            System.exit(0);
+//        }
 
         System.setProperty("java.rmi.server.hostname", hostname);
-        System.out.println(System.getProperty("java.rmi.server.hostname"));
         try {
             server = new RMIServer(hostname, context);
             Registry registry;
@@ -88,11 +85,9 @@ public class ApplicationController {
 
         try {
             client = new RMIClient(hostname, context);
-            client.startClient();
+            client.startClient(indexServerIp);
         } catch (RemoteException e) {
             System.out.println("Unable to create client");
-        } catch (NotBoundException e) {
-            System.out.println("Unable to start client");
         }
 
     }
@@ -109,10 +104,6 @@ public class ApplicationController {
         server.notifyClients(time);
     }
 
-    public static void main(String[] args) {
-        System.out.println("Starting Stopwatch Please Wait....");
-        context = new ApplicationController();
-    }
 
     public void notifyServerStartPauseResumePressed() {
         server.notifyStartPauseResumePressed();
@@ -147,6 +138,16 @@ public class ApplicationController {
         System.out.println("Server Shutdown. Shutting down Client");
         client.shutdown();
         System.out.println("Application Closed");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Starting Stopwatch Please Wait....");
+        if(args.length>0)
+        {
+            indexServerIp = args[0];
+            hostname = args[1];
+        }
+        context = new ApplicationController();
     }
 
 }
