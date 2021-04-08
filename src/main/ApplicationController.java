@@ -1,14 +1,12 @@
-package ui;
+package main;
 
 import rmi.client.RMIClient;
 import rmi.client.VirtualStopwatchClient;
 import rmi.server.RMIServer;
 import stopwatch.Stopwatch;
+import ui.StopwatchView;
 
 import javax.swing.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

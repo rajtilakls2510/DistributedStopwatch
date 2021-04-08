@@ -1,12 +1,11 @@
 package ui;
 
+import main.ApplicationController;
 import rmi.client.VirtualStopwatchClient;
 import stopwatch.Stopwatch;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
@@ -58,7 +57,7 @@ public class StopwatchView {
 
         panel2 = new JPanel();
         panel2.setLayout(new FlowLayout(FlowLayout.CENTER));
-        ownerListStopwatchItem = new ListItem("Your instance: ");
+        ownerListStopwatchItem = new ListItem("Your instance: "+ApplicationController.hostname);
         ownerListStopwatchItem.setStopwatch(new Stopwatch(context));
         panel2.add(ownerListStopwatchItem.getPanel());
 

@@ -5,13 +5,10 @@ import rmi.shared.Client;
 import rmi.shared.IndexServer;
 import rmi.shared.Server;
 import rmi.shared.VirtualStopwatch;
-import ui.ApplicationController;
+import main.ApplicationController;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
