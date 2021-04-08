@@ -6,7 +6,8 @@ import rmi.server.RMIServer;
 import stopwatch.Stopwatch;
 
 import javax.swing.*;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -52,38 +53,13 @@ public class ApplicationController {
         }
         System.out.println("Starting Server");
 
-////        byte[] ip;
         try {
             localhostName = InetAddress.getLocalHost().getHostName();
-//            localhost = InetAddress.getByAddress(ip).toString().substring(1);
             System.out.println("Localhost: " + localhostName);
         } catch (UnknownHostException e) {
             System.out.println("Localhost not found");
             System.exit(0);
         }
-
-//        try {
-//            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-//            while (interfaces.hasMoreElements()) {
-//                NetworkInterface iface = interfaces.nextElement();
-//                // filters out 127.0.0.1 and inactive interfaces
-//                if (iface.isLoopback() || !iface.isUp() || !iface.supportsMulticast())
-//                    continue;
-//
-//                Enumeration<InetAddress> addresses = iface.getInetAddresses();
-//                while(addresses.hasMoreElements()) {
-//                    InetAddress addr = addresses.nextElement();
-//
-//                    // *EDIT*
-//                    if (addr instanceof Inet6Address) continue;
-//
-//                    localhost = addr.getHostAddress();
-//                    System.out.println("Localhost " + localhost);
-//                }
-//            }
-//        } catch (SocketException e) {
-//            throw new RuntimeException(e);
-//        }
 
         try {
             server = new RMIServer(localhostName, context);
@@ -108,7 +84,6 @@ public class ApplicationController {
         }
 
     }
-
 
     public void addVirtualStopwatch(VirtualStopwatchClient virtualStopwatch, String serverIdentifier) {
         stopwatchView.addRemoteStopwatch(virtualStopwatch, serverIdentifier);

@@ -20,7 +20,6 @@ public class RMIClient implements Client {
     transient ApplicationController context;
     public String name;
     public String identifier;
-    transient ArrayList<String> localhosts;
     transient ArrayList<String> serverIdentifiers;
     transient ArrayList<ServerDecorator> servers;
     transient boolean shutdown, threadShutdown;
@@ -34,7 +33,6 @@ public class RMIClient implements Client {
         this.context = context;
         shutdown = false;
         threadShutdown = false;
-        this.localhosts = new ArrayList<>();
 
         name = ApplicationController.CLIENT_NAME;
         this.identifier = identifier;
@@ -63,7 +61,6 @@ public class RMIClient implements Client {
                                 datagramSocket.receive(receivePacket);
                                 String remoteIp = new String(receivePacket.getData(), 0,
                                         receivePacket.getLength());
-                                System.out.println("Remote IP: "+remoteIp);
 
                                 addServer(remoteIp);
 
@@ -124,14 +121,9 @@ public class RMIClient implements Client {
                 }
 
             } catch (RemoteException | NotBoundException e) {
-                e.printStackTrace();
             }
         }
 
-    }
-
-    public void setMyIps(ArrayList<String> localhosts) {
-        this.localhosts = localhosts;
     }
 
     @Override
