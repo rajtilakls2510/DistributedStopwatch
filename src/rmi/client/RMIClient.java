@@ -48,9 +48,9 @@ public class RMIClient implements Client {
         if (!shutdown) {
             try {
                 datagramSocket = new DatagramSocket(11001);
-                datagramSocket.setSoTimeout(10);
+                datagramSocket.setSoTimeout(20);
 
-                byte[] receiveData = new byte[254];
+                byte[] receiveData = new byte[256];
                 DatagramPacket receivePacket = new DatagramPacket(receiveData,
                         receiveData.length);
                 receivingThread = new Thread(new Runnable() {
@@ -61,7 +61,7 @@ public class RMIClient implements Client {
                                 datagramSocket.receive(receivePacket);
                                 String remoteIp = new String(receivePacket.getData(), 0,
                                         receivePacket.getLength());
-
+                                System.out.println("Remote IP: "+remoteIp);
                                 addServer(remoteIp);
 
                             } catch (IOException e) {
@@ -121,6 +121,7 @@ public class RMIClient implements Client {
                 }
 
             } catch (RemoteException | NotBoundException e) {
+                e.printStackTrace();
             }
         }
 

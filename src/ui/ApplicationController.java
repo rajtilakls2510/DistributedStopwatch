@@ -29,6 +29,14 @@ public class ApplicationController {
     public ApplicationController() {
         SERVER_NAME = "Server";
         CLIENT_NAME = "Client";
+
+//        try {
+//            LocateRegistry.getRegistry("indexserver",1100);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//            System.out.println("Couldn't get registry");
+//        }
+
         displayView();
     }
 
@@ -60,14 +68,18 @@ public class ApplicationController {
             System.out.println("Localhost not found");
             System.exit(0);
         }
+        String hostname = "192.168.29.153";
+        System.out.println(hostname);
 
+        System.setProperty("java.rmi.server.hostname", hostname);
+        System.out.println(System.getProperty("java.rmi.server.hostname"));
         try {
-            server = new RMIServer(localhostName, context);
+            server = new RMIServer(hostname, context);
             Registry registry;
             try {
                 registry = LocateRegistry.createRegistry(1099);
             } catch (RemoteException e) {
-                registry = LocateRegistry.getRegistry(1099);
+                registry = LocateRegistry.getRegistry(hostname, 1099);
             }
             registry.rebind(ApplicationController.SERVER_NAME, server);
         } catch (RemoteException e) {
@@ -75,7 +87,7 @@ public class ApplicationController {
         }
 
         try {
-            client = new RMIClient(localhostName, context);
+            client = new RMIClient(hostname, context);
             client.startClient();
         } catch (RemoteException e) {
             System.out.println("Unable to create client");

@@ -39,7 +39,7 @@ public class RMIServer implements Server {
 
         try {
             datagramSocket = new DatagramSocket(11000);
-            datagramSocket.setSoTimeout(10);
+            datagramSocket.setSoTimeout(20);
             broadcastThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -59,7 +59,7 @@ public class RMIServer implements Server {
                                     InetAddress broadcastAddress = iaddress.getBroadcast();
                                     if (broadcastAddress != null) {
                                         InetAddress localAddress = iaddress.getAddress();
-                                        buffer = localAddress.getHostAddress().getBytes(StandardCharsets.UTF_8);
+                                        buffer = identifier.getBytes(StandardCharsets.UTF_8);
                                         try {
                                             DatagramPacket packet = new DatagramPacket(
                                                     buffer, buffer.length, broadcastAddress, 11001
