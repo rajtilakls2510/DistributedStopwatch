@@ -24,16 +24,13 @@ public class RMIClient implements Client {
     public String name;
     public String identifier;
     transient ArrayList<ServerDecorator> servers;
-    transient boolean shutdown, threadShutdown;
-    transient Thread receivingThread;
-    private DatagramSocket datagramSocket;
+    transient boolean shutdown;
 
     public RMIClient(String identifier, ApplicationController context) throws RemoteException {
 
         servers = new ArrayList<>();
         this.context = context;
         shutdown = false;
-        threadShutdown = false;
 
         name = ApplicationController.CLIENT_NAME;
         this.identifier = identifier;
@@ -63,45 +60,6 @@ public class RMIClient implements Client {
         }
     }
 
-//    void detectBroadcasts() {
-//        if (!shutdown) {
-//            try {
-//                datagramSocket = new DatagramSocket(11001);
-//                datagramSocket.setSoTimeout(20);
-//
-//                byte[] receiveData = new byte[256];
-//                DatagramPacket receivePacket = new DatagramPacket(receiveData,
-//                        receiveData.length);
-//                receivingThread = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        while (!shutdown) {
-//                            try {
-//                                datagramSocket.receive(receivePacket);
-//                                String remoteIp = new String(receivePacket.getData(), 0,
-//                                        receivePacket.getLength());
-//                                System.out.println("Remote IP: "+remoteIp);
-//                                addServer(remoteIp);
-//
-//                            } catch (IOException e) {
-//                            }
-//                            try {
-//                                Thread.sleep(500);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        datagramSocket.close();
-//                        threadShutdown = true;
-//                    }
-//
-//                });
-//                receivingThread.start();
-//
-//            } catch (IOException e) {
-//            }
-//        }
-//    }
 
     void addServer(String ip) throws RemoteException {
         if (!shutdown) {
@@ -173,12 +131,6 @@ public class RMIClient implements Client {
     public void shutdown() {
 
         shutdown = true;
-
-//        try {
-//            receivingThread.join();
-//        } catch (InterruptedException e) {
-//        }
-//
         try {
             indexServer.unregisterPeer(identifier);
         } catch (RemoteException e) {

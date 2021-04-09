@@ -25,7 +25,6 @@ public class ApplicationController {
     public RMIServer server;
     public RMIClient client;
     public boolean viewReady;
-    public String localhostName;
 
     public static ApplicationController context;
 
