@@ -1,6 +1,6 @@
-package rmi.server;
+package rmi.virtualstopwatch;
 
-import rmi.shared.VirtualStopwatch;
+import stopwatch.VirtualStopwatch;
 import stopwatch.Stopwatch;
 
 import java.rmi.RemoteException;

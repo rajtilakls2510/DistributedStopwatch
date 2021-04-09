@@ -1,6 +1,5 @@
 package stopwatch;
 
-import rmi.client.VirtualStopwatchClient;
 import main.ApplicationController;
 
 public class Stopwatch implements Observer, VirtualStopwatchClient {

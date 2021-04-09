@@ -1,7 +1,7 @@
 package main;
 
 import rmi.client.RMIClient;
-import rmi.client.VirtualStopwatchClient;
+import stopwatch.VirtualStopwatchClient;
 import rmi.server.RMIServer;
 import stopwatch.Stopwatch;
 import ui.StopwatchView;

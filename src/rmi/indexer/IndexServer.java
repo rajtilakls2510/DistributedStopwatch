@@ -1,4 +1,6 @@
-package rmi.shared;
+package rmi.indexer;
+
+import rmi.client.Client;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

@@ -1,6 +1,6 @@
 package rmi.server;
 
-import rmi.shared.Client;
+import rmi.client.Client;
 
 public class ClientDecorator {
 

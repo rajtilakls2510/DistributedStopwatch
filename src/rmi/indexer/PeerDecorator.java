@@ -1,7 +1,6 @@
 package rmi.indexer;
 
-import rmi.shared.Client;
-import rmi.shared.Server;
+import rmi.client.Client;
 
 public class PeerDecorator {
 

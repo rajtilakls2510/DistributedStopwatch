@@ -1,4 +1,4 @@
-package rmi.client;
+package rmi.virtualstopwatch;
 
 public interface VirtualStopwatchState {
 

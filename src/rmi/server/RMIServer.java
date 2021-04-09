@@ -1,9 +1,9 @@
 package rmi.server;
 
 import main.ApplicationController;
-import rmi.shared.Client;
-import rmi.shared.Server;
-import rmi.shared.VirtualStopwatch;
+import rmi.client.Client;
+import rmi.virtualstopwatch.VirtualStopwatchServer;
+import stopwatch.VirtualStopwatch;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

@@ -1,6 +1,6 @@
-package rmi.client;
+package stopwatch;
 
-import rmi.shared.VirtualStopwatch;
+import stopwatch.VirtualStopwatch;
 import stopwatch.StopwatchUIUpdater;
 
 public interface VirtualStopwatchClient extends VirtualStopwatch {

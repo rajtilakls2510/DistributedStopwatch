@@ -2,10 +2,10 @@ package rmi.client;
 
 import main.ApplicationController;
 import main.Indexer;
-import rmi.shared.Client;
-import rmi.shared.IndexServer;
-import rmi.shared.Server;
-import rmi.shared.VirtualStopwatch;
+import rmi.indexer.IndexServer;
+import rmi.server.Server;
+import rmi.virtualstopwatch.VirtualStopwatchClientImpl;
+import stopwatch.VirtualStopwatch;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

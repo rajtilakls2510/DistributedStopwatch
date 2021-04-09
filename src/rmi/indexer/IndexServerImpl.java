@@ -1,7 +1,6 @@
 package rmi.indexer;
 
-import rmi.shared.Client;
-import rmi.shared.IndexServer;
+import rmi.client.Client;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

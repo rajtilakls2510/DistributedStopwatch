@@ -1,8 +1,9 @@
-package rmi.client;
+package rmi.virtualstopwatch;
 
-import rmi.shared.VirtualStopwatch;
+import stopwatch.VirtualStopwatch;
 import stopwatch.StopwatchUIUpdater;
 import main.ApplicationController;
+import stopwatch.VirtualStopwatchClient;
 
 import java.rmi.RemoteException;
 

@@ -1,6 +1,6 @@
 package rmi.client;
 
-import rmi.shared.Server;
+import rmi.server.Server;
 
 public class ServerDecorator {
     private Server server;

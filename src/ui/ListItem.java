@@ -1,6 +1,6 @@
 package ui;
 
-import rmi.client.VirtualStopwatchClient;
+import stopwatch.VirtualStopwatchClient;
 import stopwatch.StopwatchUIUpdater;
 
 import javax.swing.*;

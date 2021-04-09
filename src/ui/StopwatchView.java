@@ -1,7 +1,7 @@
 package ui;
 
 import main.ApplicationController;
-import rmi.client.VirtualStopwatchClient;
+import stopwatch.VirtualStopwatchClient;
 import stopwatch.Stopwatch;
 
 import javax.swing.*;
