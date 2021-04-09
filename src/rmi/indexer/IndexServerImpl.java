@@ -34,7 +34,7 @@ public class IndexServerImpl implements IndexServer {
     }
 
     @Override
-    public void unregisterPeer(String ip) throws RemoteException {
+    public void unRegisterPeer(String ip) throws RemoteException {
         activePeers.removeIf(peerDecorator ->  peerDecorator.getIp().equals(ip));
 //        printPeers();
     }

@@ -126,7 +126,7 @@ public class RMIClient implements Client {
 
         shutdown = true;
         try {
-            indexServer.unregisterPeer(identifier);
+            indexServer.unRegisterPeer(identifier);
         } catch (RemoteException e) {
         } catch (Exception e) {
         }
