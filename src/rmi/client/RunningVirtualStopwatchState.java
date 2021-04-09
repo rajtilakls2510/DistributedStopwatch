@@ -2,12 +2,12 @@ package rmi.client;
 
 import stopwatch.StopwatchUIUpdater;
 
-public class RunningStopwatchState implements VirtualStopwatchState {
+public class RunningVirtualStopwatchState implements VirtualStopwatchState {
     VirtualStopwatchClientImpl stopwatch;
     StopwatchUIUpdater stopwatchUIUpdater;
     String name;
 
-    public RunningStopwatchState(VirtualStopwatchClientImpl stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
+    public RunningVirtualStopwatchState(VirtualStopwatchClientImpl stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
         this.stopwatch = stopwatch;
         this.stopwatchUIUpdater = stopwatchUIUpdater;
         this.name = name;

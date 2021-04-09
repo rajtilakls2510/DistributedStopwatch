@@ -78,10 +78,10 @@ public class VirtualStopwatchClientImpl implements VirtualStopwatchClient {
     @Override
     public void setStopwatchUiUpdater(StopwatchUIUpdater stopwatchUIUpdater) {
         this.stopwatchUIUpdater = stopwatchUIUpdater;
-        notRunningState = new NotRunningStopwatchState(this, this.stopwatchUIUpdater, "NOT_RUNNING");
-        runningState = new RunningStopwatchState(this, this.stopwatchUIUpdater, "RUNNING");
-        pausedState = new PausedStopwatchState(this, this.stopwatchUIUpdater, "PAUSED");
-        stopPressedState = new InitializerStopwatchState(this, this.stopwatchUIUpdater, "STOP_PRESSED");
+        notRunningState = new NotRunningVirtualStopwatchState(this, this.stopwatchUIUpdater, "NOT_RUNNING");
+        runningState = new RunningVirtualStopwatchState(this, this.stopwatchUIUpdater, "RUNNING");
+        pausedState = new PausedVirtualStopwatchState(this, this.stopwatchUIUpdater, "PAUSED");
+        stopPressedState = new InitializerVirtualStopwatchState(this, this.stopwatchUIUpdater, "STOP_PRESSED");
         currentState = stopPressedState;
 
         currentState.execute();

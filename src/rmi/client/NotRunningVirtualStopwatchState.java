@@ -2,12 +2,12 @@ package rmi.client;
 
 import stopwatch.StopwatchUIUpdater;
 
-public class InitializerStopwatchState implements VirtualStopwatchState {
+public class NotRunningVirtualStopwatchState implements VirtualStopwatchState {
     VirtualStopwatchClientImpl stopwatch;
     StopwatchUIUpdater stopwatchUIUpdater;
     String name;
 
-    public InitializerStopwatchState(VirtualStopwatchClientImpl stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
+    public NotRunningVirtualStopwatchState(VirtualStopwatchClientImpl stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
         this.stopwatch = stopwatch;
         this.stopwatchUIUpdater = stopwatchUIUpdater;
         this.name = name;
@@ -16,12 +16,12 @@ public class InitializerStopwatchState implements VirtualStopwatchState {
 
     @Override
     public void handleUI() {
-        stopwatchUIUpdater.onStop();
+        stopwatchUIUpdater.onStart();
     }
 
     @Override
     public void changeState() {
-        stopwatch.setState(stopwatch.getNotRunningState());
+        stopwatch.setState(stopwatch.getRunningState());
     }
 
     @Override
