@@ -1,13 +1,12 @@
 package rmi.client;
 
+import main.ApplicationController;
 import main.Indexer;
 import rmi.shared.Client;
 import rmi.shared.IndexServer;
 import rmi.shared.Server;
 import rmi.shared.VirtualStopwatch;
-import main.ApplicationController;
 
-import java.net.DatagramSocket;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RMIClient implements Client {
-
 
     transient IndexServer indexServer;
     transient ApplicationController context;
@@ -36,14 +34,12 @@ public class RMIClient implements Client {
         this.identifier = identifier;
         UnicastRemoteObject.exportObject(this, 0);
 
-
     }
 
     public void startClient(String indexServerIp) {
-        if(!shutdown)
-        {
+        if (!shutdown) {
             try {
-                Registry indexRegistry = LocateRegistry.getRegistry(indexServerIp,Indexer.INDEXER_PORT);
+                Registry indexRegistry = LocateRegistry.getRegistry(indexServerIp, Indexer.INDEXER_PORT);
 
                 indexServer = (IndexServer) indexRegistry.lookup(Indexer.INDEXER_OBJECT_NAME);
 
@@ -60,7 +56,6 @@ public class RMIClient implements Client {
         }
     }
 
-
     void addServer(String ip) throws RemoteException {
         if (!shutdown) {
             Registry registry = LocateRegistry.getRegistry(ip, 1099);
@@ -70,11 +65,10 @@ public class RMIClient implements Client {
 
                 String serverIdentifier = server.getIdentifier();
 
-                if(serverIdentifier.equals(identifier))
-                {
+                if (serverIdentifier.equals(identifier)) {
                     throw new RemoteException();
                 }
-                for (ServerDecorator server_: servers) {
+                for (ServerDecorator server_ : servers) {
                     if (server_.getIdentifier().equals(serverIdentifier)) {
                         throw new RemoteException();
                     }
@@ -134,13 +128,20 @@ public class RMIClient implements Client {
         try {
             indexServer.unregisterPeer(identifier);
         } catch (RemoteException e) {
+        } catch (Exception e) {
         }
         for (ServerDecorator server : servers) {
-            try {
-                server.getServer().unRegisterClient(identifier);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        server.getServer().unRegisterClient(identifier);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
         }
 
     }

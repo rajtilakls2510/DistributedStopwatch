@@ -1,11 +1,10 @@
 package rmi.server;
 
+import main.ApplicationController;
 import rmi.shared.Client;
 import rmi.shared.Server;
 import rmi.shared.VirtualStopwatch;
-import main.ApplicationController;
 
-import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -56,10 +55,16 @@ public class RMIServer implements Server {
     public void notifyClients(long time) {
         try {
             for (ClientDecorator client : clients) {
-                try {
-                    client.getClient().onTimeUpdated(time, identifier);
-                } catch (RemoteException e) {
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            client.getClient().onTimeUpdated(time, identifier);
+                        } catch (RemoteException e) {
+                        }
+                    }
+                }).start();
+
             }
         } catch (Exception ignored) {
         }
@@ -68,10 +73,16 @@ public class RMIServer implements Server {
     public void notifyStartPauseResumePressed() {
         try {
             for (ClientDecorator client : clients) {
-                try {
-                    client.getClient().onStartPauseResumePressed(identifier);
-                } catch (RemoteException e) {
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            client.getClient().onStartPauseResumePressed(identifier);
+                        } catch (RemoteException e) {
+                        }
+                    }
+                }).start();
+
             }
         } catch (Exception ignored) {
         }
@@ -84,10 +95,16 @@ public class RMIServer implements Server {
                 String clientIdentifier = client.getIdentifier();
 
                 if (!clientIdentifier.equals(doNotBroadcastToClient)) {
-                    try {
-                        client.getClient().onStartPauseResumePressed(identifier);
-                    } catch (RemoteException e) {
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                client.getClient().onStartPauseResumePressed(identifier);
+                            } catch (RemoteException e) {
+                            }
+                        }
+                    }).start();
+
                 }
             }
         } catch (Exception ignored) {
@@ -97,10 +114,16 @@ public class RMIServer implements Server {
     public void notifyStopPressed() {
         try {
             for (ClientDecorator client : clients) {
-                try {
-                    client.getClient().onStopPressed(identifier);
-                } catch (RemoteException e) {
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            client.getClient().onStopPressed(identifier);
+                        } catch (RemoteException e) {
+                        }
+                    }
+                }).start();
+
             }
         } catch (Exception ignored) {
         }
@@ -113,10 +136,16 @@ public class RMIServer implements Server {
                 String clientIdentifier = client.getIdentifier();
 
                 if (!clientIdentifier.equals(doNotBroadcastToClient)) {
-                    try {
-                        client.getClient().onStopPressed(identifier);
-                    } catch (RemoteException e) {
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                client.getClient().onStopPressed(identifier);
+                            } catch (RemoteException e) {
+                            }
+                        }
+                    }).start();
+
                 }
             }
         } catch (Exception ignored) {
@@ -127,10 +156,16 @@ public class RMIServer implements Server {
         shutdown = true;
         try {
             for (ClientDecorator client : clients) {
-                try {
-                    client.getClient().onServerShutdown(identifier);
-                } catch (Exception e) {
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            client.getClient().onServerShutdown(identifier);
+                        } catch (Exception e) {
+                        }
+                    }
+                }).start();
+
             }
         } catch (Exception ignored) {
         }
