@@ -139,7 +139,6 @@ public class RMIClient implements Client {
                 }
 
             } catch (RemoteException | NotBoundException e) {
-                e.printStackTrace();
             }
         }
 

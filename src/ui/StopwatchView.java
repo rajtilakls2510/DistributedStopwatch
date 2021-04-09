@@ -57,7 +57,7 @@ public class StopwatchView {
 
         panel2 = new JPanel();
         panel2.setLayout(new FlowLayout(FlowLayout.CENTER));
-        ownerListStopwatchItem = new ListItem("Your instance: "+ApplicationController.hostname);
+        ownerListStopwatchItem = new ListItem("Your instance: ");
         ownerListStopwatchItem.setStopwatch(new Stopwatch(context));
         panel2.add(ownerListStopwatchItem.getPanel());
 
@@ -77,6 +77,10 @@ public class StopwatchView {
         for (ListItem item : listView.items)
             panel3.add(item.getPanel());
         frame.setVisible(true);
+    }
+
+    public void displayIP(String ip){
+        ownerListStopwatchItem.instanceDisplay.setText("Your Instance: "+ip);
     }
 
     public Stopwatch getOwnerStopwatch() {

@@ -7,9 +7,14 @@ import stopwatch.Stopwatch;
 import ui.StopwatchView;
 
 import javax.swing.*;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Enumeration;
 
 public class ApplicationController {
 
@@ -27,14 +32,6 @@ public class ApplicationController {
     public ApplicationController() {
         SERVER_NAME = "Server";
         CLIENT_NAME = "Client";
-
-//        try {
-//            LocateRegistry.getRegistry("indexserver",1100);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//            System.out.println("Couldn't get registry");
-//        }
-
         displayView();
     }
 
@@ -59,14 +56,29 @@ public class ApplicationController {
         }
         System.out.println("Starting Server");
 
-//        try {
-//            localhostName = InetAddress.getLocalHost().getHostName();
-//            System.out.println("Localhost: " + localhostName);
-//        } catch (UnknownHostException e) {
-//            System.out.println("Localhost not found");
-//            System.exit(0);
-//        }
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                // filters out 127.0.0.1 and inactive interfaces
+                if (iface.isLoopback() || !iface.isUp() || !iface.supportsMulticast())
+                    continue;
 
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while(addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+
+                    // *EDIT*
+                    if (addr instanceof Inet6Address) continue;
+
+                    hostname = addr.getHostAddress();
+                }
+            }
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("IP: "+ hostname);
+        stopwatchView.displayIP(hostname);
         System.setProperty("java.rmi.server.hostname", hostname);
         try {
             server = new RMIServer(hostname, context);
@@ -143,7 +155,6 @@ public class ApplicationController {
         if(args.length>0)
         {
             indexServerIp = args[0];
-            hostname = args[1];
         }
         context = new ApplicationController();
     }
