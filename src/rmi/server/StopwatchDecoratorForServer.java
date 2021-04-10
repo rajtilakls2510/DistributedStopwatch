@@ -1,4 +1,4 @@
-package rmi.virtualstopwatch;
+package rmi.server;
 
 import stopwatch.StopwatchUIUpdater;
 import stopwatch.VirtualStopwatch;

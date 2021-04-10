@@ -1,7 +1,5 @@
 package stopwatch;
 
-import java.io.Serializable;
-
 public interface StopwatchState {
 
     default void execute() {

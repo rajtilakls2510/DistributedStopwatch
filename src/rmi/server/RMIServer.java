@@ -2,7 +2,6 @@ package rmi.server;
 
 import main.ApplicationController;
 import rmi.client.Client;
-import rmi.virtualstopwatch.StopwatchDecoratorForServer;
 import stopwatch.VirtualStopwatch;
 
 import java.rmi.RemoteException;
