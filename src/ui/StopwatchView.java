@@ -67,7 +67,7 @@ public class StopwatchView {
         panelIndexer = new JPanel();
         panelIndexer.setLayout(new FlowLayout(FlowLayout.LEFT));
         JLabel hintLabel = new JLabel("Index Server IP: ");
-        indexerIpField = new JTextField(ApplicationController.hostname,18);
+        indexerIpField = new JTextField(ApplicationController.indexServerIp,18);
         JButton indexerSelectButton = new JButton("Select");
         indexerSelectButton.addActionListener(new ActionListener() {
             @Override
