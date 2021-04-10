@@ -6,6 +6,8 @@ import stopwatch.Stopwatch;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
@@ -14,8 +16,9 @@ public class StopwatchView {
     ApplicationController context;
     public ListView<ListItem> listView;
     JFrame frame;
-    JPanel panel1, panel2, panel3;
+    JPanel panel1, panel2, panel3, panelIndexer;
     JLabel remoteStopwatch;
+    JTextField indexerIpField;
     JScrollPane scrollPane;
     public ListItem ownerListStopwatchItem;
 
@@ -49,17 +52,34 @@ public class StopwatchView {
 
 
     public void setUpPanels() {
+
         panel1 = new JPanel();
-        panel1.setLayout(new FlowLayout(FlowLayout.LEFT));
-        remoteStopwatch = new JLabel("Remote Stopwatches");
-
-        panel1.add(remoteStopwatch);
-
-        panel2 = new JPanel();
-        panel2.setLayout(new FlowLayout(FlowLayout.CENTER));
+        panel1.setLayout(new FlowLayout(FlowLayout.CENTER));
         ownerListStopwatchItem = new ListItem("Your instance: ");
         ownerListStopwatchItem.setStopwatch(new Stopwatch(context));
-        panel2.add(ownerListStopwatchItem.getPanel());
+        panel1.add(ownerListStopwatchItem.getPanel());
+
+        panel2 = new JPanel();
+        panel2.setLayout(new FlowLayout(FlowLayout.LEFT));
+        remoteStopwatch = new JLabel("Remote Stopwatches");
+        panel2.add(remoteStopwatch);
+
+        panelIndexer = new JPanel();
+        panelIndexer.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JLabel hintLabel = new JLabel("Index Server IP: ");
+        indexerIpField = new JTextField(ApplicationController.hostname,18);
+        JButton indexerSelectButton = new JButton("Select");
+        indexerSelectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleNewIndexServerIp();
+            }
+        });
+
+        panelIndexer.add(hintLabel);
+        panelIndexer.add(indexerIpField);
+        panelIndexer.add(indexerSelectButton);
+
 
         panel3 = new JPanel();
         panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
@@ -68,8 +88,9 @@ public class StopwatchView {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        frame.add(panel2);
         frame.add(panel1);
+        frame.add(panelIndexer);
+        frame.add(panel2);
         frame.add(scrollPane);
     }
 
@@ -77,6 +98,19 @@ public class StopwatchView {
         for (ListItem item : listView.items)
             panel3.add(item.getPanel());
         frame.setVisible(true);
+    }
+
+    public void handleNewIndexServerIp()
+    {
+        ApplicationController.indexServerIp = indexerIpField.getText();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                context.startClientWithIndexServer(ApplicationController.indexServerIp);
+
+            }
+        }).start();
+
     }
 
     public void displayIP(String ip){

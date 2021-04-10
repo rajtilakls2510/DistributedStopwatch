@@ -38,7 +38,6 @@ public class RMIServer implements Server {
     @Override
     public void unRegisterClient(String clientIdentifier) throws RemoteException {
         clients.removeIf(client -> client.getIdentifier().equals(clientIdentifier));
-
     }
 
     @Override
@@ -150,9 +149,8 @@ public class RMIServer implements Server {
         } catch (Exception ignored) {
         }
     }
-
-    public void shutdown() {
-        shutdown = true;
+    public void unRegisterAllClients()
+    {
         try {
             for (ClientDecorator client : clients) {
                 new Thread(new Runnable() {
@@ -168,6 +166,11 @@ public class RMIServer implements Server {
             }
         } catch (Exception ignored) {
         }
+    }
+
+    public void shutdown() {
+        shutdown = true;
+        unRegisterAllClients();
     }
 
 }

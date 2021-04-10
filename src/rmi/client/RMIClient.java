@@ -22,38 +22,41 @@ public class RMIClient implements Client {
     public String name;
     public String identifier;
     transient ArrayList<ServerDecorator> servers;
-    transient boolean shutdown;
+    transient boolean shutdown, shutdownComplete;
 
     public RMIClient(String identifier, ApplicationController context) throws RemoteException {
 
-        servers = new ArrayList<>();
         this.context = context;
-        shutdown = false;
-
         name = ApplicationController.CLIENT_NAME;
         this.identifier = identifier;
         UnicastRemoteObject.exportObject(this, 0);
+        initializeClient();
+    }
 
+    public void initializeClient() {
+        servers = new ArrayList<>();
+        shutdown = false;
     }
 
     public void startClient(String indexServerIp) {
-        if (!shutdown) {
-            try {
-                Registry indexRegistry = LocateRegistry.getRegistry(indexServerIp, Indexer.INDEXER_PORT);
 
-                indexServer = (IndexServer) indexRegistry.lookup(Indexer.INDEXER_OBJECT_NAME);
+        try {
+            Registry indexRegistry = LocateRegistry.getRegistry(indexServerIp, Indexer.INDEXER_PORT);
 
-                indexServer.registerPeer(this, identifier);
-                List<String> allPeersIps = indexServer.getAllPeers();
-                for (String peerIp : allPeersIps)
-                    addServer(peerIp);
+            indexServer = (IndexServer) indexRegistry.lookup(Indexer.INDEXER_OBJECT_NAME);
 
-            } catch (RemoteException e) {
-                System.out.println("Couldn't get index server registry.");
-            } catch (NotBoundException e) {
-                System.out.println("Couldn't get index server object.");
-            }
+            indexServer.registerPeer(this, identifier);
+            List<String> allPeersIps = indexServer.getAllPeers();
+            for (String peerIp : allPeersIps)
+                addServer(peerIp);
+            System.out.println("Client Started");
+
+        } catch (RemoteException e) {
+            System.out.println("Couldn't get index server registry.");
+        } catch (NotBoundException e) {
+            System.out.println("Couldn't get index server object.");
         }
+
     }
 
     void addServer(String ip) throws RemoteException {
@@ -127,24 +130,55 @@ public class RMIClient implements Client {
     public void shutdown() {
 
         shutdown = true;
-        try {
-            indexServer.unRegisterPeer(identifier);
-        } catch (RemoteException e) {
-        } catch (Exception e) {
+        if (indexServer != null) {
+            try {
+                indexServer.unRegisterPeer(identifier);
+            } catch (RemoteException e) {
+            } catch (Exception e) {
+            }
+            for (ServerDecorator server : servers) {
+                context.removeRemoteVirtualStopwatch(server.getIdentifier());
+            }
         }
+        ArrayList<Thread> shutdownThreads = new ArrayList<>();
         for (ServerDecorator server : servers) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        server.getServer().unRegisterClient(identifier);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
 
+            if (servers.get(servers.size() - 1).equals(server)) {
+
+                shutdownThreads.add(new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            server.getServer().unRegisterClient(identifier);
+
+                        } catch (RemoteException e) {
+                        }
+                        System.out.println("ShutDown Complete");
+                    }
+                }));
+            } else {
+                shutdownThreads.add(new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            server.getServer().unRegisterClient(identifier);
+                        } catch (RemoteException e) {
+                        }
+                    }
+                }));
+            }
+            shutdownThreads.get(shutdownThreads.size()-1).start();
         }
 
+        for(Thread shutdownThread: shutdownThreads)
+        {
+            try {
+                shutdownThread.join();
+            } catch (InterruptedException e) {
+            }
+        }
+
+        initializeClient();
+        System.out.println("Client Shutdown");
     }
 }

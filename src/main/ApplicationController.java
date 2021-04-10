@@ -44,12 +44,11 @@ public class ApplicationController {
 
                 viewReady = true;
                 startServerAndClient();
-
             }
         });
     }
 
-    void startServerAndClient() {
+    public void startServerAndClient() {
 
         while (!viewReady) {
         }
@@ -94,12 +93,21 @@ public class ApplicationController {
 
         try {
             client = new RMIClient(hostname, context);
-            client.startClient(indexServerIp);
+            if (indexServerIp.length()>0)
+                startClientWithIndexServer(indexServerIp);
         } catch (RemoteException e) {
             System.out.println("Unable to create client");
         }
 
     }
+    public void startClientWithIndexServer(String indexServerIp)
+    {
+        server.unRegisterAllClients();
+        client.shutdown();
+        client.startClient(indexServerIp);
+
+    }
+
 
     public void addVirtualStopwatch(VirtualStopwatch virtualStopwatch, String serverIdentifier) {
         stopwatchView.addRemoteStopwatch(virtualStopwatch, serverIdentifier);
@@ -144,7 +152,6 @@ public class ApplicationController {
 
     public void cleanUp() {
         server.shutdown();
-        System.out.println("Server Shutdown. Shutting down Client");
         client.shutdown();
         System.out.println("Application Closed");
     }
