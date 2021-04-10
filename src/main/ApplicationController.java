@@ -1,7 +1,7 @@
 package main;
 
 import rmi.client.RMIClient;
-import stopwatch.VirtualStopwatchClient;
+import stopwatch.VirtualStopwatch;
 import rmi.server.RMIServer;
 import stopwatch.Stopwatch;
 import ui.StopwatchView;
@@ -101,7 +101,7 @@ public class ApplicationController {
 
     }
 
-    public void addVirtualStopwatch(VirtualStopwatchClient virtualStopwatch, String serverIdentifier) {
+    public void addVirtualStopwatch(VirtualStopwatch virtualStopwatch, String serverIdentifier) {
         stopwatchView.addRemoteStopwatch(virtualStopwatch, serverIdentifier);
     }
 

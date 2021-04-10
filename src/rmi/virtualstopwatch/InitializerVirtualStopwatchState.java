@@ -3,11 +3,11 @@ package rmi.virtualstopwatch;
 import stopwatch.StopwatchUIUpdater;
 
 public class InitializerVirtualStopwatchState implements VirtualStopwatchState {
-    VirtualStopwatchClientImpl stopwatch;
+    RemoteStopwatch stopwatch;
     StopwatchUIUpdater stopwatchUIUpdater;
     String name;
 
-    public InitializerVirtualStopwatchState(VirtualStopwatchClientImpl stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
+    public InitializerVirtualStopwatchState(RemoteStopwatch stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
         this.stopwatch = stopwatch;
         this.stopwatchUIUpdater = stopwatchUIUpdater;
         this.name = name;

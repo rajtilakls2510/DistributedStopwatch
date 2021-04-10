@@ -2,7 +2,7 @@ package rmi.server;
 
 import main.ApplicationController;
 import rmi.client.Client;
-import rmi.virtualstopwatch.VirtualStopwatchServer;
+import rmi.virtualstopwatch.StopwatchDecoratorForServer;
 import stopwatch.VirtualStopwatch;
 
 import java.rmi.RemoteException;
@@ -44,7 +44,7 @@ public class RMIServer implements Server {
 
     @Override
     public VirtualStopwatch getOwnerStopwatchInstance() throws RemoteException {
-        return new VirtualStopwatchServer(context.ownerStopwatchInstance);
+        return new StopwatchDecoratorForServer(context.ownerStopwatchInstance);
     }
 
     @Override

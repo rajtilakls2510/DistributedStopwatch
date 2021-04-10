@@ -2,7 +2,7 @@ package stopwatch;
 
 import main.ApplicationController;
 
-public class Stopwatch implements Observer, VirtualStopwatchClient {
+public class Stopwatch implements Observer, VirtualStopwatch {
 
     StopwatchCore sw;
 

@@ -1,7 +1,7 @@
 package ui;
 
 import main.ApplicationController;
-import stopwatch.VirtualStopwatchClient;
+import stopwatch.VirtualStopwatch;
 import stopwatch.Stopwatch;
 
 import javax.swing.*;
@@ -87,7 +87,7 @@ public class StopwatchView {
         return (Stopwatch) ownerListStopwatchItem.stopwatch;
     }
 
-    public void addRemoteStopwatch(VirtualStopwatchClient virtualStopwatch, String serverIdentifier) {
+    public void addRemoteStopwatch(VirtualStopwatch virtualStopwatch, String serverIdentifier) {
         ListItem newItem = new ListItem(serverIdentifier);
         newItem.setStopwatch(virtualStopwatch);
         listView.add(newItem);
@@ -119,8 +119,12 @@ public class StopwatchView {
 
     public void notifyVirtualStopwatchTimeUpdated(long time, String serverIdentifier) {
         ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByName(serverIdentifier);
-        if (virtualStopwatchListItem != null)
-            virtualStopwatchListItem.stopwatch.remoteOnTimeUpdated(time);
+        if (virtualStopwatchListItem != null) {
+            try {
+                virtualStopwatchListItem.stopwatch.remoteOnTimeUpdated(time);
+            } catch (RemoteException e) {
+            }
+        }
     }
 
     public void notifyVirtualStopwatchStartPressed(String serverIdentifier) {

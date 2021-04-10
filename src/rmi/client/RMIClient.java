@@ -4,7 +4,7 @@ import main.ApplicationController;
 import main.Indexer;
 import rmi.indexer.IndexServer;
 import rmi.server.Server;
-import rmi.virtualstopwatch.VirtualStopwatchClientImpl;
+import rmi.virtualstopwatch.RemoteStopwatch;
 import stopwatch.VirtualStopwatch;
 
 import java.rmi.NotBoundException;
@@ -82,12 +82,14 @@ public class RMIClient implements Client {
                 try {
                     virtualStopwatch = server.getOwnerStopwatchInstance();
                     state = server.getOwnerStopwatchState();
-                    VirtualStopwatchClientImpl virtualStopwatchClientImpl = new VirtualStopwatchClientImpl(virtualStopwatch, state, serverDecorator.getIdentifier());
-                    context.addVirtualStopwatch(virtualStopwatchClientImpl, serverDecorator.getIdentifier());
+                    RemoteStopwatch remoteStopwatch = new RemoteStopwatch(virtualStopwatch, state, serverDecorator.getIdentifier());
+                    context.addVirtualStopwatch(remoteStopwatch, serverDecorator.getIdentifier());
                     servers.add(serverDecorator);
                     server.registerClient(this, identifier);
                 } catch (RemoteException e) {
+
                     System.out.println("Couldn't get remote virtual stopwatch: " + ip);
+                    e.printStackTrace();
                 }
 
             } catch (RemoteException | NotBoundException e) {

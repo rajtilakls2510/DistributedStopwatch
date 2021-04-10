@@ -1,6 +1,8 @@
 package stopwatch;
 
-public interface StopwatchUIUpdater {
+import java.io.Serializable;
+
+public interface StopwatchUIUpdater extends Serializable {
     void onStart();
 
     void onPause();

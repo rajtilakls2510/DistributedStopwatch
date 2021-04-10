@@ -1,7 +1,7 @@
 package ui;
 
-import stopwatch.VirtualStopwatchClient;
 import stopwatch.StopwatchUIUpdater;
+import stopwatch.VirtualStopwatch;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 
 public class ListItem {
 
-    public VirtualStopwatchClient stopwatch;
+    public VirtualStopwatch stopwatch;
     StopwatchUIUpdater uiUpdater;
     JPanel panel;
     JLabel instanceDisplay;
@@ -64,9 +64,12 @@ public class ListItem {
 
     }
 
-    public void setStopwatch(VirtualStopwatchClient stopwatch) {
+    public void setStopwatch(VirtualStopwatch stopwatch) {
         this.stopwatch = stopwatch;
-        stopwatch.setStopwatchUiUpdater(uiUpdater);
+        try {
+            stopwatch.setStopwatchUiUpdater(uiUpdater);
+        } catch (RemoteException e) {
+        }
     }
 
     private void setUpPanel() {
@@ -77,7 +80,6 @@ public class ListItem {
 
         Font font = timerDisplay.getFont();
         timerDisplay.setFont(new Font(font.getFontName(), font.getStyle(), 16));
-
 
         stop.setVisible(false);
 

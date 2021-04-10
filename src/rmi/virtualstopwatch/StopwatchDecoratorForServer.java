@@ -1,17 +1,19 @@
 package rmi.virtualstopwatch;
 
+import stopwatch.StopwatchUIUpdater;
 import stopwatch.VirtualStopwatch;
 import stopwatch.Stopwatch;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class VirtualStopwatchServer implements VirtualStopwatch {
+public class StopwatchDecoratorForServer implements VirtualStopwatch {
 
 
     transient Stopwatch sw;
 
-    public VirtualStopwatchServer(Stopwatch sw) throws RemoteException {
+    public StopwatchDecoratorForServer(Stopwatch sw) throws RemoteException {
         this.sw = sw;
         UnicastRemoteObject.exportObject(this, 0);
     }
@@ -41,5 +43,14 @@ public class VirtualStopwatchServer implements VirtualStopwatch {
         sw.remoteStopPressed(clientName);
     }
 
+    @Override
+    public void remoteOnTimeUpdated(long time) throws RemoteException {
+
+    }
+
+    @Override
+    public void setStopwatchUiUpdater(StopwatchUIUpdater stopwatchUIUpdater) throws RemoteException {
+
+    }
 
 }
