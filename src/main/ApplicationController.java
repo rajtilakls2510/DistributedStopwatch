@@ -7,10 +7,7 @@ import stopwatch.VirtualStopwatch;
 import ui.StopwatchView;
 
 import javax.swing.*;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -29,8 +26,8 @@ public class ApplicationController {
 
     public static ApplicationController context;
 
-    public ApplicationController() {
-        instanceInfo = new InstanceInfo(String.valueOf(System.currentTimeMillis()));
+    public ApplicationController(String hostIp) {
+        instanceInfo = new InstanceInfo(String.valueOf(System.currentTimeMillis()), hostIp);
         displayView();
     }
 
@@ -53,7 +50,11 @@ public class ApplicationController {
         while (!viewReady) {
         }
         System.out.println("Starting Server");
-
+//        try {
+//            instanceInfo.setHostIP(InetAddress.getLocalHost().getHostAddress());
+//        } catch (UnknownHostException e) {
+//        }
+        String ip="";
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -69,12 +70,15 @@ public class ApplicationController {
                     // *EDIT*
                     if (addr instanceof Inet6Address) continue;
 
-                    instanceInfo.setHostIP(addr.getHostAddress());
+                    ip = addr.getHostAddress();
+
                 }
+                break;
             }
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
+        instanceInfo.setHostIP(ip);
         System.out.println("Identifier: "+instanceInfo.getInstanceIdentifier());
         System.out.println("IP: " + instanceInfo.getHostIP());
         stopwatchView.displayIP(instanceInfo);
@@ -126,7 +130,6 @@ public class ApplicationController {
     }
 
     public void notifyServerStartPauseResumePressed(InstanceInfo doNotBroadcastToClient) {
-        System.out.println("Do not broadcast context: "+doNotBroadcastToClient.getInstanceIdentifier());
         server.notifyStartPauseResumePressed(doNotBroadcastToClient);
     }
 
@@ -158,10 +161,12 @@ public class ApplicationController {
 
     public static void main(String[] args) {
         System.out.println("Starting Stopwatch Please Wait....");
+        String hostIp="";
         if (args.length > 0) {
             indexServerIp = args[0];
+            hostIp= args[1];
         }
-        context = new ApplicationController();
+        context = new ApplicationController(hostIp);
     }
 
 }

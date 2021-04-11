@@ -51,7 +51,6 @@ public class RemoteStopwatch implements VirtualStopwatch {
     public void startPauseResume() {
         try {
             sw.remoteStartPressed(ApplicationController.instanceInfo);
-            System.out.println("Do not broadcast remote: "+ApplicationController.instanceInfo.getInstanceIdentifier());
             currentState.execute();
         } catch (RemoteException e) {
         }

@@ -37,7 +37,6 @@ public class StopwatchDecoratorForServer implements VirtualStopwatch {
 
     @Override
     public void remoteStartPressed(InstanceInfo clientInfo) throws RemoteException {
-        System.out.println("Do not broadcast stopwatchdecorator: "+ clientInfo.getInstanceIdentifier());
         sw.remoteStartPressed(clientInfo);
     }
 

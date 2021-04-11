@@ -90,9 +90,7 @@ public class RMIServer implements Server {
             for (ClientDecorator client : clients) {
 
                 String clientIdentifier = client.getInstanceInfo().getInstanceIdentifier();
-                System.out.println("Client Identifier: "+clientIdentifier);
                 if (!clientIdentifier.equals(doNotBroadcastToClient.getInstanceIdentifier())) {
-                    System.out.println("Do not broadcast: "+doNotBroadcastToClient.getInstanceIdentifier());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -132,10 +130,8 @@ public class RMIServer implements Server {
             for (ClientDecorator client : clients) {
 
                 String clientIdentifier = client.getInstanceInfo().getInstanceIdentifier();
-                System.out.println("Client Identifier: "+clientIdentifier);
 
                 if (!clientIdentifier.equals(doNotBroadcastToClient.getInstanceIdentifier())) {
-                    System.out.println("Do not broadcast: "+doNotBroadcastToClient.getInstanceIdentifier());
 
                     new Thread(new Runnable() {
                         @Override

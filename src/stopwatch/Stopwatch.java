@@ -125,7 +125,6 @@ public class Stopwatch implements Observer, VirtualStopwatch {
 
     public void remoteStartPressed(InstanceInfo clientInfo) {
         currentState.execute();
-        System.out.println("Do not broadcast stopwatch: "+clientInfo.getInstanceIdentifier());
         context.notifyServerStartPauseResumePressed(clientInfo);
     }
 

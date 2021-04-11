@@ -16,7 +16,13 @@ public class Indexer {
 
     public static void main(String[] args) {
         String ip = "192.168.29.153"; // Test IP
+//        ip = args[0];
 
+//        try {
+//            ip = InetAddress.getLocalHost().getHostAddress();
+//        } catch (UnknownHostException e) {
+//
+//        }
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -33,7 +39,10 @@ public class Indexer {
                     if (addr instanceof Inet6Address) continue;
 
                     ip = addr.getHostAddress();
+                    System.out.println("Detected IP: "+ip);
+
                 }
+                break;
             }
         } catch (SocketException e) {
             throw new RuntimeException(e);
@@ -59,7 +68,6 @@ public class Indexer {
             registry.rebind(INDEXER_OBJECT_NAME, indexServer);
         } catch (RemoteException e) {
             System.out.println("Couldn't create index server");
-            e.printStackTrace();
         }
         System.out.println("Index Server Started");
         System.out.println("IP: "+ip);
