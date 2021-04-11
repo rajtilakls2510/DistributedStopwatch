@@ -1,6 +1,7 @@
 package ui;
 
 import main.ApplicationController;
+import main.InstanceInfo;
 import stopwatch.VirtualStopwatch;
 import stopwatch.Stopwatch;
 
@@ -55,7 +56,7 @@ public class StopwatchView {
 
         panel1 = new JPanel();
         panel1.setLayout(new FlowLayout(FlowLayout.CENTER));
-        ownerListStopwatchItem = new ListItem("Your instance: ");
+        ownerListStopwatchItem = new ListItem(ApplicationController.instanceInfo);
         ownerListStopwatchItem.setStopwatch(new Stopwatch(context));
         panel1.add(ownerListStopwatchItem.getPanel());
 
@@ -67,7 +68,7 @@ public class StopwatchView {
         panelIndexer = new JPanel();
         panelIndexer.setLayout(new FlowLayout(FlowLayout.LEFT));
         JLabel hintLabel = new JLabel("Index Server IP: ");
-        indexerIpField = new JTextField(ApplicationController.indexServerIp,18);
+        indexerIpField = new JTextField(ApplicationController.indexServerIp,14);
         JButton indexerSelectButton = new JButton("Select");
         indexerSelectButton.addActionListener(new ActionListener() {
             @Override
@@ -113,16 +114,17 @@ public class StopwatchView {
 
     }
 
-    public void displayIP(String ip){
-        ownerListStopwatchItem.instanceDisplay.setText("Your Instance: "+ip);
+    public void displayIP(InstanceInfo instanceInfo){
+        ownerListStopwatchItem.instanceIdentifierDisplay.setText("Your ID: "+instanceInfo.getInstanceIdentifier());
+        ownerListStopwatchItem.instanceIpDisplay.setText("Your IP: "+instanceInfo.getHostIP());
     }
 
     public Stopwatch getOwnerStopwatch() {
         return (Stopwatch) ownerListStopwatchItem.stopwatch;
     }
 
-    public void addRemoteStopwatch(VirtualStopwatch virtualStopwatch, String serverIdentifier) {
-        ListItem newItem = new ListItem(serverIdentifier);
+    public void addRemoteStopwatch(VirtualStopwatch virtualStopwatch, InstanceInfo serverInfo) {
+        ListItem newItem = new ListItem(serverInfo);
         newItem.setStopwatch(virtualStopwatch);
         listView.add(newItem);
         panel3.add(newItem.getPanel());
@@ -130,9 +132,9 @@ public class StopwatchView {
         panel3.repaint();
         setFrameVisible();
     }
-    public void removeRemoteVirtualStopwatch(String serverIdentifier) {
+    public void removeRemoteVirtualStopwatch(InstanceInfo serverInfo) {
 
-        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByName(serverIdentifier);
+        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
         if (virtualStopwatchListItem != null) {
             listView.remove(virtualStopwatchListItem);
             panel3.remove(virtualStopwatchListItem.getPanel());
@@ -143,16 +145,16 @@ public class StopwatchView {
         setFrameVisible();
     }
 
-    ListItem getVirtualStopwatchListItemByName(String name) {
+    ListItem getVirtualStopwatchListItemByIdentifier(InstanceInfo serverInfo) {
         for (ListItem item : listView.items) {
-            if (item.name.equals(name))
+            if (item.getInstanceInfo().getInstanceIdentifier().equals(serverInfo.getInstanceIdentifier()))
                 return item;
         }
         return null;
     }
 
-    public void notifyVirtualStopwatchTimeUpdated(long time, String serverIdentifier) {
-        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByName(serverIdentifier);
+    public void notifyVirtualStopwatchTimeUpdated(long time, InstanceInfo serverInfo) {
+        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
         if (virtualStopwatchListItem != null) {
             try {
                 virtualStopwatchListItem.stopwatch.remoteOnTimeUpdated(time);
@@ -161,21 +163,21 @@ public class StopwatchView {
         }
     }
 
-    public void notifyVirtualStopwatchStartPressed(String serverIdentifier) {
-        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByName(serverIdentifier);
+    public void notifyVirtualStopwatchStartPressed(InstanceInfo serverInfo) {
+        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
         if (virtualStopwatchListItem != null) {
             try {
-                virtualStopwatchListItem.stopwatch.remoteStartPressed(serverIdentifier);
+                virtualStopwatchListItem.stopwatch.remoteStartPressed(serverInfo);
             } catch (RemoteException e) {
             }
         }
     }
 
-    public void notifyVirtualStopwatchStopPressed(String serverIdentifier) {
-        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByName(serverIdentifier);
+    public void notifyVirtualStopwatchStopPressed(InstanceInfo serverInfo) {
+        ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
         if (virtualStopwatchListItem != null) {
             try {
-                virtualStopwatchListItem.stopwatch.remoteStopPressed(serverIdentifier);
+                virtualStopwatchListItem.stopwatch.remoteStopPressed(serverInfo);
             } catch (RemoteException e) {
             }
         }

@@ -1,15 +1,16 @@
 package rmi.indexer;
 
+import main.InstanceInfo;
 import rmi.client.Client;
 
 public class PeerDecorator {
 
     private Client client;
-    private String ip;
+    private InstanceInfo instanceInfo;
 
-    public PeerDecorator(Client client, String ip) {
+    public PeerDecorator(Client client, InstanceInfo instanceInfo) {
         this.client = client;
-        this.ip = ip;
+        this.instanceInfo = instanceInfo;
     }
 
     public Client getClient() {
@@ -20,11 +21,11 @@ public class PeerDecorator {
         this.client = client;
     }
 
-    public String getIp() {
-        return ip;
+    public InstanceInfo getInstanceInfo() {
+        return instanceInfo;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setInstanceInfo(InstanceInfo instanceInfo) {
+        this.instanceInfo = instanceInfo;
     }
 }

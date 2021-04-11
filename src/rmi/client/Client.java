@@ -1,16 +1,18 @@
 package rmi.client;
 
+import main.InstanceInfo;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface Client extends Remote {
-    void onTimeUpdated(long time, String serverIdentifier) throws RemoteException;
+    void onTimeUpdated(long time, InstanceInfo serverInfo) throws RemoteException;
 
-    void onStartPauseResumePressed(String serverIdentifier) throws RemoteException;
+    void onStartPauseResumePressed(InstanceInfo serverInfo) throws RemoteException;
 
-    void onStopPressed(String serverIdentifier) throws RemoteException;
+    void onStopPressed(InstanceInfo serverInfo) throws RemoteException;
 
-    void onServerShutdown(String serverIdentifier) throws RemoteException;
+    void onServerShutdown(InstanceInfo serverInfo) throws RemoteException;
 
-    void onNewPeer(String ip) throws RemoteException;
+    void onNewPeer(InstanceInfo peerInfo) throws RemoteException;
 }

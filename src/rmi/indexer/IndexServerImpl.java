@@ -1,5 +1,6 @@
 package rmi.indexer;
 
+import main.InstanceInfo;
 import rmi.client.Client;
 
 import java.rmi.RemoteException;
@@ -13,38 +14,38 @@ public class IndexServerImpl implements IndexServer {
 
     public IndexServerImpl() throws RemoteException {
         activePeers = new ArrayList<>();
-        UnicastRemoteObject.exportObject(this, 1100);
+        UnicastRemoteObject.exportObject(this, 0);
     }
 
     @Override
-    public void registerPeer(Client client, String ip) throws RemoteException {
+    public void registerPeer(Client client, InstanceInfo peerInfo) throws RemoteException {
 
-        activePeers.removeIf(peerDecorator -> peerDecorator.getIp().equals(ip));
+        activePeers.removeIf(peerDecorator -> peerDecorator.getInstanceInfo().getInstanceIdentifier().equals(peerInfo.getInstanceIdentifier()));
 
-        activePeers.add(new PeerDecorator(client, ip));
+        activePeers.add(new PeerDecorator(client, peerInfo));
         if(activePeers.size()>0)
         {
             for(PeerDecorator peer: activePeers)
             {
-                peer.getClient().onNewPeer(ip);
+                peer.getClient().onNewPeer(peerInfo);
             }
         }
-//        printPeers();
+        printPeers();
     }
 
     @Override
-    public void unRegisterPeer(String ip) throws RemoteException {
-        activePeers.removeIf(peerDecorator ->  peerDecorator.getIp().equals(ip));
-//        printPeers();
+    public void unRegisterPeer(InstanceInfo peerInfo) throws RemoteException {
+        activePeers.removeIf(peerDecorator ->  peerDecorator.getInstanceInfo().getInstanceIdentifier().equals(peerInfo.getInstanceIdentifier()));
+        printPeers();
     }
 
     @Override
-    public List<String> getAllPeers() throws RemoteException {
-        ArrayList<String> peerIps = new ArrayList<>();
+    public List<InstanceInfo> getAllPeers() throws RemoteException {
+        ArrayList<InstanceInfo> peerInfos = new ArrayList<>();
         for (PeerDecorator peerDecorator: activePeers)
-            peerIps.add(peerDecorator.getIp());
+            peerInfos.add(peerDecorator.getInstanceInfo());
 
-        return peerIps;
+        return peerInfos;
     }
 
     public void printPeers()
@@ -52,7 +53,7 @@ public class IndexServerImpl implements IndexServer {
         System.out.println("\nPeers: ");
         for (PeerDecorator peerDecorator: activePeers)
         {
-            System.out.print(peerDecorator.getIp() + "\t");
+            System.out.print(peerDecorator.getInstanceInfo().getInstanceIdentifier() + "\t");
         }
 
     }

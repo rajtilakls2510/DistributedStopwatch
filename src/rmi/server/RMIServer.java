@@ -1,6 +1,7 @@
 package rmi.server;
 
 import main.ApplicationController;
+import main.InstanceInfo;
 import rmi.client.Client;
 import stopwatch.VirtualStopwatch;
 
@@ -11,14 +12,12 @@ import java.util.ArrayList;
 public class RMIServer implements Server {
 
     transient ArrayList<ClientDecorator> clients;
-    public String name;
-    public String identifier;
+    public InstanceInfo instanceInfo;
     transient ApplicationController context;
     transient boolean shutdown;
 
-    public RMIServer(String identifier, ApplicationController context) throws RemoteException {
-        name = ApplicationController.SERVER_NAME;
-        this.identifier = identifier;
+    public RMIServer(ApplicationController context) throws RemoteException {
+        this.instanceInfo = ApplicationController.instanceInfo;
         this.context = context;
         clients = new ArrayList<>();
         shutdown = false;
@@ -26,18 +25,18 @@ public class RMIServer implements Server {
     }
 
     @Override
-    public String getIdentifier() throws RemoteException {
-        return identifier;
+    public InstanceInfo getInstanceInfo() throws RemoteException {
+        return instanceInfo;
     }
 
     @Override
-    public void registerClient(Client client, String clientIdentifier) throws RemoteException {
-        clients.add(new ClientDecorator(client, ApplicationController.CLIENT_NAME, clientIdentifier));
+    public void registerClient(Client client, InstanceInfo clientInfo) throws RemoteException {
+        clients.add(new ClientDecorator(client, clientInfo));
     }
 
     @Override
-    public void unRegisterClient(String clientIdentifier) throws RemoteException {
-        clients.removeIf(client -> client.getIdentifier().equals(clientIdentifier));
+    public void unRegisterClient(InstanceInfo clientInfo) throws RemoteException {
+        clients.removeIf(client -> client.getInstanceInfo().getInstanceIdentifier().equals(clientInfo.getInstanceIdentifier()));
     }
 
     @Override
@@ -57,7 +56,7 @@ public class RMIServer implements Server {
                     @Override
                     public void run() {
                         try {
-                            client.getClient().onTimeUpdated(time, identifier);
+                            client.getClient().onTimeUpdated(time, instanceInfo);
                         } catch (RemoteException e) {
                         }
                     }
@@ -75,7 +74,7 @@ public class RMIServer implements Server {
                     @Override
                     public void run() {
                         try {
-                            client.getClient().onStartPauseResumePressed(identifier);
+                            client.getClient().onStartPauseResumePressed(instanceInfo);
                         } catch (RemoteException e) {
                         }
                     }
@@ -86,18 +85,19 @@ public class RMIServer implements Server {
         }
     }
 
-    public void notifyStartPauseResumePressed(String doNotBroadcastToClient) {
+    public void notifyStartPauseResumePressed(InstanceInfo doNotBroadcastToClient) {
         try {
             for (ClientDecorator client : clients) {
 
-                String clientIdentifier = client.getIdentifier();
-
-                if (!clientIdentifier.equals(doNotBroadcastToClient)) {
+                String clientIdentifier = client.getInstanceInfo().getInstanceIdentifier();
+                System.out.println("Client Identifier: "+clientIdentifier);
+                if (!clientIdentifier.equals(doNotBroadcastToClient.getInstanceIdentifier())) {
+                    System.out.println("Do not broadcast: "+doNotBroadcastToClient.getInstanceIdentifier());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                client.getClient().onStartPauseResumePressed(identifier);
+                                client.getClient().onStartPauseResumePressed(instanceInfo);
                             } catch (RemoteException e) {
                             }
                         }
@@ -116,7 +116,7 @@ public class RMIServer implements Server {
                     @Override
                     public void run() {
                         try {
-                            client.getClient().onStopPressed(identifier);
+                            client.getClient().onStopPressed(instanceInfo);
                         } catch (RemoteException e) {
                         }
                     }
@@ -127,18 +127,21 @@ public class RMIServer implements Server {
         }
     }
 
-    public void notifyStopPressed(String doNotBroadcastToClient) {
+    public void notifyStopPressed(InstanceInfo doNotBroadcastToClient) {
         try {
             for (ClientDecorator client : clients) {
 
-                String clientIdentifier = client.getIdentifier();
+                String clientIdentifier = client.getInstanceInfo().getInstanceIdentifier();
+                System.out.println("Client Identifier: "+clientIdentifier);
 
-                if (!clientIdentifier.equals(doNotBroadcastToClient)) {
+                if (!clientIdentifier.equals(doNotBroadcastToClient.getInstanceIdentifier())) {
+                    System.out.println("Do not broadcast: "+doNotBroadcastToClient.getInstanceIdentifier());
+
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                client.getClient().onStopPressed(identifier);
+                                client.getClient().onStopPressed(instanceInfo);
                             } catch (RemoteException e) {
                             }
                         }
@@ -157,7 +160,7 @@ public class RMIServer implements Server {
                     @Override
                     public void run() {
                         try {
-                            client.getClient().onServerShutdown(identifier);
+                            client.getClient().onServerShutdown(instanceInfo);
                         } catch (Exception e) {
                         }
                     }

@@ -1,6 +1,9 @@
 package stopwatch;
 
 import main.ApplicationController;
+import main.InstanceInfo;
+
+import java.rmi.RemoteException;
 
 public class Stopwatch implements Observer, VirtualStopwatch {
 
@@ -120,20 +123,26 @@ public class Stopwatch implements Observer, VirtualStopwatch {
 
 
 
-    public void remoteStartPressed(String clientIdentifier) {
+    public void remoteStartPressed(InstanceInfo clientInfo) {
         currentState.execute();
-        context.notifyServerStartPauseResumePressed(clientIdentifier);
+        System.out.println("Do not broadcast stopwatch: "+clientInfo.getInstanceIdentifier());
+        context.notifyServerStartPauseResumePressed(clientInfo);
     }
 
-    public void remoteStopPressed(String clientIdentifier) {
+    public void remoteStopPressed(InstanceInfo clientInfo) {
 
         currentState = stopPressedState;
         currentState.execute();
-        context.notifyServerStopPressed(clientIdentifier);
+        context.notifyServerStopPressed(clientInfo);
     }
 
     @Override
     public void remoteOnTimeUpdated(long time) {
 
+    }
+
+    @Override
+    public InstanceInfo getInstanceInfo() throws RemoteException {
+        return ApplicationController.instanceInfo;
     }
 }

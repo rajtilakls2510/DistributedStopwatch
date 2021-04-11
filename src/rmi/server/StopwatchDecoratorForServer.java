@@ -1,5 +1,7 @@
 package rmi.server;
 
+import main.ApplicationController;
+import main.InstanceInfo;
 import stopwatch.StopwatchUIUpdater;
 import stopwatch.VirtualStopwatch;
 import stopwatch.Stopwatch;
@@ -34,13 +36,14 @@ public class StopwatchDecoratorForServer implements VirtualStopwatch {
     }
 
     @Override
-    public void remoteStartPressed(String clientName) throws RemoteException {
-        sw.remoteStartPressed(clientName);
+    public void remoteStartPressed(InstanceInfo clientInfo) throws RemoteException {
+        System.out.println("Do not broadcast stopwatchdecorator: "+ clientInfo.getInstanceIdentifier());
+        sw.remoteStartPressed(clientInfo);
     }
 
     @Override
-    public void remoteStopPressed(String clientName) throws RemoteException {
-        sw.remoteStopPressed(clientName);
+    public void remoteStopPressed(InstanceInfo clientInfo) throws RemoteException {
+        sw.remoteStopPressed(clientInfo);
     }
 
     @Override
@@ -53,4 +56,8 @@ public class StopwatchDecoratorForServer implements VirtualStopwatch {
 
     }
 
+    @Override
+    public InstanceInfo getInstanceInfo() throws RemoteException {
+        return sw.getInstanceInfo();
+    }
 }

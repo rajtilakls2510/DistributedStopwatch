@@ -1,5 +1,6 @@
 package rmi.virtualstopwatch;
 
+import main.InstanceInfo;
 import stopwatch.VirtualStopwatch;
 import stopwatch.StopwatchUIUpdater;
 import main.ApplicationController;
@@ -20,10 +21,10 @@ public class RemoteStopwatch implements VirtualStopwatch {
     StopwatchUIUpdater stopwatchUIUpdater;
     String previousState;
 
-    String clientIdentifier;
+    InstanceInfo remoteOwnerInfo;
 
-    public RemoteStopwatch(VirtualStopwatch stopwatch, String previousState, String clientIdentifier) {
-        this.clientIdentifier = clientIdentifier;
+    public RemoteStopwatch(VirtualStopwatch stopwatch, String previousState, InstanceInfo ownerInfo) {
+        this.remoteOwnerInfo = ownerInfo;
         sw = stopwatch;
         this.previousState = previousState;
 
@@ -49,7 +50,8 @@ public class RemoteStopwatch implements VirtualStopwatch {
     @Override
     public void startPauseResume() {
         try {
-            sw.remoteStartPressed(ApplicationController.hostname);
+            sw.remoteStartPressed(ApplicationController.instanceInfo);
+            System.out.println("Do not broadcast remote: "+ApplicationController.instanceInfo.getInstanceIdentifier());
             currentState.execute();
         } catch (RemoteException e) {
         }
@@ -58,7 +60,7 @@ public class RemoteStopwatch implements VirtualStopwatch {
     @Override
     public void stop() {
         try {
-            sw.remoteStopPressed(ApplicationController.hostname);
+            sw.remoteStopPressed(ApplicationController.instanceInfo);
             currentState = stopPressedState;
             currentState.execute();
         } catch (RemoteException e) {
@@ -89,12 +91,12 @@ public class RemoteStopwatch implements VirtualStopwatch {
     }
 
     @Override
-    public void remoteStartPressed(String serverName) {
+    public void remoteStartPressed(InstanceInfo serverInfo) {
         currentState.execute();
     }
 
     @Override
-    public void remoteStopPressed(String serverName) {
+    public void remoteStopPressed(InstanceInfo serverInfo) {
         currentState = stopPressedState;
         currentState.execute();
     }
@@ -104,11 +106,10 @@ public class RemoteStopwatch implements VirtualStopwatch {
         stopwatchUIUpdater.onTimeUpdate(time);
     }
 
-
-    public String getName() {
-        return clientIdentifier;
+    @Override
+    public InstanceInfo getInstanceInfo() throws RemoteException {
+        return remoteOwnerInfo;
     }
-
 
     public void setState(VirtualStopwatchState stopwatchState) {
         currentState = stopwatchState;

@@ -1,5 +1,6 @@
 package ui;
 
+import main.InstanceInfo;
 import stopwatch.StopwatchUIUpdater;
 import stopwatch.VirtualStopwatch;
 
@@ -14,15 +15,17 @@ public class ListItem {
     public VirtualStopwatch stopwatch;
     StopwatchUIUpdater uiUpdater;
     JPanel panel;
-    JLabel instanceDisplay;
+    JLabel instanceIpDisplay;
+    JLabel instanceIdentifierDisplay;
     JLabel timerDisplay;
     JButton start;
     JButton stop;
-    public String name;
+    InstanceInfo instanceInfo;
 
-    public ListItem(String name) {
-        this.name = name;
-        instanceDisplay = new JLabel(name);
+    public ListItem(InstanceInfo instanceInfo) {
+        this.instanceInfo = instanceInfo;
+        instanceIpDisplay = new JLabel("IP: "+instanceInfo.getHostIP());
+        instanceIdentifierDisplay = new JLabel("ID: "+instanceInfo.getInstanceIdentifier());
         timerDisplay = new JLabel();
         start = new JButton("Start");
         stop = new JButton("Stop");
@@ -77,22 +80,30 @@ public class ListItem {
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
         panel.setLayout(layout);
+//        panel.setPreferredSize(new Dimension(500, 50));
 
         Font font = timerDisplay.getFont();
         timerDisplay.setFont(new Font(font.getFontName(), font.getStyle(), 16));
 
         stop.setVisible(false);
 
+        JPanel infoPanel = new JPanel();
+//        infoPanel.setPreferredSize(new Dimension(50,50));
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+        infoPanel.add(instanceIpDisplay);
+        infoPanel.add(instanceIdentifierDisplay);
+
         layout.setHorizontalGroup(
                 layout.createSequentialGroup()
-                        .addComponent(instanceDisplay)
+                        .addComponent(infoPanel)
                         .addComponent(timerDisplay)
                         .addComponent(start)
                         .addComponent(stop)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(instanceDisplay)
+                        .addComponent(infoPanel)
                         .addComponent(timerDisplay)
                         .addComponent(start)
                         .addComponent(stop)
@@ -131,6 +142,11 @@ public class ListItem {
         return stop;
     }
 
+    public InstanceInfo getInstanceInfo()
+    {
+        return instanceInfo;
+    }
+
     private void handleStartPress() {
         try {
             stopwatch.startPauseResume();
@@ -166,11 +182,6 @@ public class ListItem {
             formattedTime = String.format("%02d", hours) + ":" + formattedTime;
         return formattedTime;
 
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 }
 

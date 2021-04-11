@@ -1,27 +1,23 @@
 package rmi.client;
 
+import main.InstanceInfo;
 import rmi.server.Server;
 
 public class ServerDecorator {
     private Server server;
-    private String name;
-    private String identifier;
+    private InstanceInfo instanceInfo;
 
-    public ServerDecorator(Server server, String name, String identifier) {
+    public ServerDecorator(Server server, InstanceInfo instanceInfo) {
         this.server = server;
-        this.name = name;
-        this.identifier = identifier;
+        this.instanceInfo = instanceInfo;
     }
 
     public Server getServer() {
         return server;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public String getIdentifier() {
-        return identifier;
+    public InstanceInfo getInstanceInfo() {
+        return instanceInfo;
     }
 }

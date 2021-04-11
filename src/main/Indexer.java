@@ -15,9 +15,7 @@ public class Indexer {
     public static final String INDEXER_OBJECT_NAME = "Index";
 
     public static void main(String[] args) {
-        String ip = "192.168.29.153";
-        Enumeration<NetworkInterface> networkInterfaces
-                                    = null;
+        String ip = "192.168.29.153"; // Test IP
 
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -61,6 +59,7 @@ public class Indexer {
             registry.rebind(INDEXER_OBJECT_NAME, indexServer);
         } catch (RemoteException e) {
             System.out.println("Couldn't create index server");
+            e.printStackTrace();
         }
         System.out.println("Index Server Started");
         System.out.println("IP: "+ip);

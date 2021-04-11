@@ -2,6 +2,7 @@ package rmi.client;
 
 import main.ApplicationController;
 import main.Indexer;
+import main.InstanceInfo;
 import rmi.indexer.IndexServer;
 import rmi.server.Server;
 import rmi.virtualstopwatch.RemoteStopwatch;
@@ -19,16 +20,14 @@ public class RMIClient implements Client {
 
     transient IndexServer indexServer;
     transient ApplicationController context;
-    public String name;
-    public String identifier;
+    public InstanceInfo instanceInfo;
     transient ArrayList<ServerDecorator> servers;
     transient boolean shutdown, shutdownComplete;
 
-    public RMIClient(String identifier, ApplicationController context) throws RemoteException {
+    public RMIClient(ApplicationController context) throws RemoteException {
 
         this.context = context;
-        name = ApplicationController.CLIENT_NAME;
-        this.identifier = identifier;
+        this.instanceInfo = ApplicationController.instanceInfo;
         UnicastRemoteObject.exportObject(this, 0);
         initializeClient();
     }
@@ -45,10 +44,10 @@ public class RMIClient implements Client {
 
             indexServer = (IndexServer) indexRegistry.lookup(Indexer.INDEXER_OBJECT_NAME);
 
-            indexServer.registerPeer(this, identifier);
-            List<String> allPeersIps = indexServer.getAllPeers();
-            for (String peerIp : allPeersIps)
-                addServer(peerIp);
+            indexServer.registerPeer(this, instanceInfo);
+            List<InstanceInfo> allPeersInfos = indexServer.getAllPeers();
+            for (InstanceInfo peerInfo : allPeersInfos)
+                addServer(peerInfo);
             System.out.println("Client Started");
 
         } catch (RemoteException e) {
@@ -59,25 +58,25 @@ public class RMIClient implements Client {
 
     }
 
-    void addServer(String ip) throws RemoteException {
+    void addServer(InstanceInfo instanceInfo) throws RemoteException {
         if (!shutdown) {
-            Registry registry = LocateRegistry.getRegistry(ip, 1099);
+            Registry registry = LocateRegistry.getRegistry(instanceInfo.getHostIP(), 1099);
 
             try {
-                Server server = (Server) registry.lookup(ApplicationController.SERVER_NAME);
+                Server server = (Server) registry.lookup(instanceInfo.getServerName());
 
-                String serverIdentifier = server.getIdentifier();
+                InstanceInfo serverInfo = server.getInstanceInfo();
 
-                if (serverIdentifier.equals(identifier)) {
+                if (serverInfo.getInstanceIdentifier().equals(ApplicationController.instanceInfo.getInstanceIdentifier())) {
                     throw new RemoteException();
                 }
                 for (ServerDecorator server_ : servers) {
-                    if (server_.getIdentifier().equals(serverIdentifier)) {
+                    if (server_.getInstanceInfo().getInstanceIdentifier().equals(serverInfo.getInstanceIdentifier())) {
                         throw new RemoteException();
                     }
                 }
 
-                ServerDecorator serverDecorator = new ServerDecorator(server, ApplicationController.SERVER_NAME, serverIdentifier);
+                ServerDecorator serverDecorator = new ServerDecorator(server, serverInfo);
 
                 VirtualStopwatch virtualStopwatch = null;
                 String state = "";
@@ -85,14 +84,12 @@ public class RMIClient implements Client {
                 try {
                     virtualStopwatch = server.getOwnerStopwatchInstance();
                     state = server.getOwnerStopwatchState();
-                    RemoteStopwatch remoteStopwatch = new RemoteStopwatch(virtualStopwatch, state, serverDecorator.getIdentifier());
-                    context.addVirtualStopwatch(remoteStopwatch, serverDecorator.getIdentifier());
+                    RemoteStopwatch remoteStopwatch = new RemoteStopwatch(virtualStopwatch, state, serverDecorator.getInstanceInfo());
+                    context.addVirtualStopwatch(remoteStopwatch, serverDecorator.getInstanceInfo());
                     servers.add(serverDecorator);
-                    server.registerClient(this, identifier);
+                    server.registerClient(this, ApplicationController.instanceInfo);
                 } catch (RemoteException e) {
-
-                    System.out.println("Couldn't get remote virtual stopwatch: " + ip);
-                    e.printStackTrace();
+                    System.out.println("Couldn't get remote virtual stopwatch: " + instanceInfo);
                 }
 
             } catch (RemoteException | NotBoundException e) {
@@ -102,29 +99,29 @@ public class RMIClient implements Client {
     }
 
     @Override
-    public void onNewPeer(String ip) throws RemoteException {
-        addServer(ip);
+    public void onNewPeer(InstanceInfo peerInfo) throws RemoteException {
+        addServer(peerInfo);
     }
 
     @Override
-    public void onTimeUpdated(long time, String serverIdentifier) throws RemoteException {
-        context.notifyVirtualStopwatchTimeUpdated(time, serverIdentifier);
+    public void onTimeUpdated(long time, InstanceInfo serverInfo) throws RemoteException {
+        context.notifyVirtualStopwatchTimeUpdated(time, serverInfo);
     }
 
     @Override
-    public void onStartPauseResumePressed(String serverIdentifier) throws RemoteException {
-        context.notifyVirtualStopwatchStartPressed(serverIdentifier);
+    public void onStartPauseResumePressed(InstanceInfo serverInfo) throws RemoteException {
+        context.notifyVirtualStopwatchStartPressed(serverInfo);
     }
 
     @Override
-    public void onStopPressed(String serverIdentifier) throws RemoteException {
-        context.notifyVirtualStopwatchStopPressed(serverIdentifier);
+    public void onStopPressed(InstanceInfo serverInfo) throws RemoteException {
+        context.notifyVirtualStopwatchStopPressed(serverInfo);
     }
 
     @Override
-    public void onServerShutdown(String identifier) throws RemoteException {
-        servers.removeIf(server -> server.getIdentifier().equals(identifier));
-        context.removeRemoteVirtualStopwatch(identifier);
+    public void onServerShutdown(InstanceInfo serverInfo) throws RemoteException {
+        servers.removeIf(server -> server.getInstanceInfo().getInstanceIdentifier().equals(serverInfo.getInstanceIdentifier()));
+        context.removeRemoteVirtualStopwatch(serverInfo);
     }
 
     public void shutdown() {
@@ -132,12 +129,12 @@ public class RMIClient implements Client {
         shutdown = true;
         if (indexServer != null) {
             try {
-                indexServer.unRegisterPeer(identifier);
+                indexServer.unRegisterPeer(instanceInfo);
             } catch (RemoteException e) {
             } catch (Exception e) {
             }
             for (ServerDecorator server : servers) {
-                context.removeRemoteVirtualStopwatch(server.getIdentifier());
+                context.removeRemoteVirtualStopwatch(server.getInstanceInfo());
             }
         }
         ArrayList<Thread> shutdownThreads = new ArrayList<>();
@@ -149,7 +146,7 @@ public class RMIClient implements Client {
                     @Override
                     public void run() {
                         try {
-                            server.getServer().unRegisterClient(identifier);
+                            server.getServer().unRegisterClient(instanceInfo);
 
                         } catch (RemoteException e) {
                         }
@@ -161,7 +158,7 @@ public class RMIClient implements Client {
                     @Override
                     public void run() {
                         try {
-                            server.getServer().unRegisterClient(identifier);
+                            server.getServer().unRegisterClient(instanceInfo);
                         } catch (RemoteException e) {
                         }
                     }

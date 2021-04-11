@@ -1,5 +1,6 @@
 package rmi.server;
 
+import main.InstanceInfo;
 import rmi.client.Client;
 import stopwatch.VirtualStopwatch;
 
@@ -8,11 +9,11 @@ import java.rmi.RemoteException;
 
 public interface Server extends Remote {
 
-    String getIdentifier() throws RemoteException;
+    InstanceInfo getInstanceInfo() throws RemoteException;
 
-    void registerClient(Client client, String clientIdentifier) throws RemoteException;
+    void registerClient(Client client, InstanceInfo clientInfo) throws RemoteException;
 
-    void unRegisterClient(String clientIdentifier) throws RemoteException;
+    void unRegisterClient(InstanceInfo clientInfo) throws RemoteException;
 
     VirtualStopwatch getOwnerStopwatchInstance() throws RemoteException;
 
