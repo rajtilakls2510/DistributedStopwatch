@@ -50,39 +50,42 @@ public class ApplicationController {
         while (!viewReady) {
         }
         System.out.println("Starting Server");
-//        try {
-//            instanceInfo.setHostIP(InetAddress.getLocalHost().getHostAddress());
-//        } catch (UnknownHostException e) {
-//        }
-        String ip="";
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface iface = interfaces.nextElement();
-                // filters out 127.0.0.1 and inactive interfaces
-                if (iface.isLoopback() || !iface.isUp() || !iface.supportsMulticast())
-                    continue;
+        if(instanceInfo.getHostIP().length()==0) {
+            String ip = "";
+            try {
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                while (interfaces.hasMoreElements()) {
+                    NetworkInterface iface = interfaces.nextElement();
+                    // filters out 127.0.0.1 and inactive interfaces
+                    if (iface.isLoopback() || !iface.isUp() || !iface.supportsMulticast())
+                        continue;
 
-                Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                while (addresses.hasMoreElements()) {
-                    InetAddress addr = addresses.nextElement();
+                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        InetAddress addr = addresses.nextElement();
 
-                    // *EDIT*
-                    if (addr instanceof Inet6Address) continue;
+                        // *EDIT*
+                        if (addr instanceof Inet6Address) continue;
 
-                    ip = addr.getHostAddress();
+                        ip = addr.getHostAddress();
 
+                    }
+                    break;
                 }
-                break;
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
+            instanceInfo.setHostIP(ip);
         }
-        instanceInfo.setHostIP(ip);
         System.out.println("Identifier: "+instanceInfo.getInstanceIdentifier());
         System.out.println("IP: " + instanceInfo.getHostIP());
         stopwatchView.displayIP(instanceInfo);
         System.setProperty("java.rmi.server.hostname", instanceInfo.getHostIP());
+        System.setProperty("java.security.policy", "all.policy");
+
+        if(System.getSecurityManager() == null)
+            System.setSecurityManager(new SecurityManager());
+
         try {
             server = new RMIServer(context);
             Registry registry;
@@ -162,7 +165,10 @@ public class ApplicationController {
     public static void main(String[] args) {
         System.out.println("Starting Stopwatch Please Wait....");
         String hostIp="";
-        if (args.length > 0) {
+        if (args.length == 1) {
+            indexServerIp = args[0];
+        }
+        else if (args.length > 1) {
             indexServerIp = args[0];
             hostIp= args[1];
         }

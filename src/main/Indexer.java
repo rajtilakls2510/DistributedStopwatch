@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Enumeration;
-import java.util.Iterator;
 
 public class Indexer {
 
@@ -16,40 +15,42 @@ public class Indexer {
 
     public static void main(String[] args) {
         String ip = "192.168.29.153"; // Test IP
-//        ip = args[0];
 
-//        try {
-//            ip = InetAddress.getLocalHost().getHostAddress();
-//        } catch (UnknownHostException e) {
-//
-//        }
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface iface = interfaces.nextElement();
-                // filters out 127.0.0.1 and inactive interfaces
-                if (iface.isLoopback() || !iface.isUp() || !iface.supportsMulticast())
-                    continue;
+        if(args.length>0)
+        {
+            ip=args[0];
+        }
+        else {
+            try {
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                while (interfaces.hasMoreElements()) {
+                    NetworkInterface iface = interfaces.nextElement();
+                    // filters out 127.0.0.1 and inactive interfaces
+                    if (iface.isLoopback() || !iface.isUp() || !iface.supportsMulticast())
+                        continue;
 
-                Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                while(addresses.hasMoreElements()) {
-                    InetAddress addr = addresses.nextElement();
+                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        InetAddress addr = addresses.nextElement();
 
-                    // *EDIT*
-                    if (addr instanceof Inet6Address) continue;
+                        // *EDIT*
+                        if (addr instanceof Inet6Address) continue;
 
-                    ip = addr.getHostAddress();
-                    System.out.println("Detected IP: "+ip);
+                        ip = addr.getHostAddress();
 
+                    }
+                    break;
                 }
-                break;
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
         }
 
-
         System.setProperty("java.rmi.server.hostname", ip);
+        System.setProperty("java.security.policy", "all.policy");
+
+        if(System.getSecurityManager() == null)
+            System.setSecurityManager(new SecurityManager());
 
         Registry registry = null;
         try {
