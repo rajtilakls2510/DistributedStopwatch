@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 
 public class Stopwatch implements Observer, VirtualStopwatch {
 
-    StopwatchCore sw;
+    StopwatchEngine sw;
 
     StopwatchState notRunningState;
     StopwatchState runningState;
@@ -93,7 +93,7 @@ public class Stopwatch implements Observer, VirtualStopwatch {
         this.previousState = previousState;
     }
 
-    public void setStopwatch(StopwatchCore sw) {
+    public void setStopwatch(StopwatchEngine sw) {
         this.sw = sw;
     }
 

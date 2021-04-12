@@ -13,7 +13,7 @@ public class NotRunningStopwatchState implements StopwatchState {
 
     @Override
     public void handleStopwatch() {
-        StopwatchCore sw = new StopwatchCore();
+        StopwatchEngine sw = new StopwatchEngine();
         stopwatch.setStopwatch(sw);
         sw.registerObserver(stopwatch);
         sw.start();

@@ -3,13 +3,13 @@ package stopwatch;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class StopwatchCore implements Runnable, Observable {
+public class StopwatchEngine implements Runnable, Observable {
     private long offset, currentStart;
     private boolean isStopped;
     private Thread th;
     private ArrayList<Observer> observers;
 
-    public StopwatchCore() {
+    public StopwatchEngine() {
         offset = 0L;
         currentStart = System.currentTimeMillis();
         isStopped = true;
