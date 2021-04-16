@@ -20,7 +20,6 @@ public class Stopwatch implements Observer, VirtualStopwatch {
     StopwatchUIUpdater stopwatchUIUpdater;
     transient ApplicationController context;
 
-
     public Stopwatch(ApplicationController context) {
         this.context = context;
 
@@ -39,15 +38,14 @@ public class Stopwatch implements Observer, VirtualStopwatch {
         currentState.execute();
     }
 
-
     public void startPauseResume() {
         currentState.execute();
-        new Thread(new Runnable() {
+        ApplicationController.networkThreadPool.submit(new Runnable() {
             @Override
             public void run() {
                 context.notifyServerStartPauseResumePressed();
             }
-        }).start();
+        });
 
     }
 
@@ -55,12 +53,12 @@ public class Stopwatch implements Observer, VirtualStopwatch {
 
         currentState = stopPressedState;
         currentState.execute();
-        new Thread(new Runnable() {
+        ApplicationController.networkThreadPool.submit(new Runnable() {
             @Override
             public void run() {
                 context.notifyServerStopPressed();
             }
-        }).start();
+        });
 
     }
 
@@ -71,19 +69,17 @@ public class Stopwatch implements Observer, VirtualStopwatch {
         return 0L;
     }
 
-
     @Override
     public void update(long time) {
 
         stopwatchUIUpdater.onTimeUpdate(time);
-        new Thread(new Runnable() {
+        ApplicationController.networkThreadPool.submit(new Runnable() {
             @Override
             public void run() {
                 context.notifyServerStopwatchTimeChange(time);
             }
-        }).start();
+        });
     }
-
 
     public void setState(StopwatchState stopwatchState) {
         currentState = stopwatchState;
@@ -120,8 +116,6 @@ public class Stopwatch implements Observer, VirtualStopwatch {
     public String getPreviousStateName() {
         return previousState.getName();
     }
-
-
 
     public void remoteStartPressed(InstanceInfo clientInfo) {
         currentState.execute();

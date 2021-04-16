@@ -12,11 +12,16 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Enumeration;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class ApplicationController {
 
     public static String indexServerIp = "";
     public static InstanceInfo instanceInfo;
+    public static ExecutorService networkThreadPool;
 
     StopwatchView stopwatchView;
     public Stopwatch ownerStopwatchInstance;
@@ -28,6 +33,7 @@ public class ApplicationController {
 
     public ApplicationController(String hostIp) {
         instanceInfo = new InstanceInfo(String.valueOf(System.currentTimeMillis()), hostIp);
+        networkThreadPool = Executors.newFixedThreadPool(25);
         displayView();
     }
 

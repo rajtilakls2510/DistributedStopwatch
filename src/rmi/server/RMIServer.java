@@ -52,15 +52,16 @@ public class RMIServer implements Server {
     public void notifyClients(long time) {
         try {
             for (ClientDecorator client : clients) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            client.getClient().onTimeUpdated(time, instanceInfo);
-                        } catch (RemoteException e) {
-                        }
-                    }
-                }).start();
+                ApplicationController.networkThreadPool.submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    client.getClient().onTimeUpdated(time, instanceInfo);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                        });
 
             }
         } catch (Exception ignored) {
@@ -70,15 +71,16 @@ public class RMIServer implements Server {
     public void notifyStartPauseResumePressed() {
         try {
             for (ClientDecorator client : clients) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            client.getClient().onStartPauseResumePressed(instanceInfo);
-                        } catch (RemoteException e) {
-                        }
-                    }
-                }).start();
+                ApplicationController.networkThreadPool.submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    client.getClient().onStartPauseResumePressed(instanceInfo);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                        });
 
             }
         } catch (Exception ignored) {
@@ -91,15 +93,16 @@ public class RMIServer implements Server {
 
                 String clientIdentifier = client.getInstanceInfo().getInstanceIdentifier();
                 if (!clientIdentifier.equals(doNotBroadcastToClient.getInstanceIdentifier())) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                client.getClient().onStartPauseResumePressed(instanceInfo);
-                            } catch (RemoteException e) {
-                            }
-                        }
-                    }).start();
+                    ApplicationController.networkThreadPool.submit(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        client.getClient().onStartPauseResumePressed(instanceInfo);
+                                    } catch (RemoteException e) {
+                                    }
+                                }
+                            });
 
                 }
             }
@@ -110,15 +113,16 @@ public class RMIServer implements Server {
     public void notifyStopPressed() {
         try {
             for (ClientDecorator client : clients) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            client.getClient().onStopPressed(instanceInfo);
-                        } catch (RemoteException e) {
-                        }
-                    }
-                }).start();
+                ApplicationController.networkThreadPool.submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    client.getClient().onStopPressed(instanceInfo);
+                                } catch (RemoteException e) {
+                                }
+                            }
+                        });
 
             }
         } catch (Exception ignored) {
@@ -132,35 +136,36 @@ public class RMIServer implements Server {
                 String clientIdentifier = client.getInstanceInfo().getInstanceIdentifier();
 
                 if (!clientIdentifier.equals(doNotBroadcastToClient.getInstanceIdentifier())) {
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                client.getClient().onStopPressed(instanceInfo);
-                            } catch (RemoteException e) {
-                            }
-                        }
-                    }).start();
+                    ApplicationController.networkThreadPool.submit(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        client.getClient().onStopPressed(instanceInfo);
+                                    } catch (RemoteException e) {
+                                    }
+                                }
+                            });
 
                 }
             }
         } catch (Exception ignored) {
         }
     }
-    public void unRegisterAllClients()
-    {
+
+    public void unRegisterAllClients() {
         try {
             for (ClientDecorator client : clients) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            client.getClient().onServerShutdown(instanceInfo);
-                        } catch (Exception e) {
-                        }
-                    }
-                }).start();
+                ApplicationController.networkThreadPool.submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    client.getClient().onServerShutdown(instanceInfo);
+                                } catch (Exception e) {
+                                }
+                            }
+                        });
 
             }
         } catch (Exception ignored) {

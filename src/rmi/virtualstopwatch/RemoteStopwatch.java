@@ -1,15 +1,14 @@
 package rmi.virtualstopwatch;
 
-import main.InstanceInfo;
-import stopwatch.VirtualStopwatch;
-import stopwatch.StopwatchUIUpdater;
 import main.ApplicationController;
+import main.InstanceInfo;
+import stopwatch.StopwatchUIUpdater;
+import stopwatch.VirtualStopwatch;
 
 import java.rmi.RemoteException;
 
 public class RemoteStopwatch implements VirtualStopwatch {
     VirtualStopwatch sw;
-
 
     VirtualStopwatchState notRunningState;
     VirtualStopwatchState runningState;
@@ -49,34 +48,36 @@ public class RemoteStopwatch implements VirtualStopwatch {
 
     @Override
     public void startPauseResume() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        ApplicationController.networkThreadPool.submit(
+                new Runnable() {
+                    @Override
+                    public void run() {
 
-                try {
-                    sw.remoteStartPressed(ApplicationController.instanceInfo);
-                    currentState.execute();
-                } catch (RemoteException e) {
-                }
-            }
-        }).start();
+                        try {
+                            sw.remoteStartPressed(ApplicationController.instanceInfo);
+                            currentState.execute();
+                        } catch (RemoteException e) {
+                        }
+                    }
+                });
     }
 
     @Override
     public void stop() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        ApplicationController.networkThreadPool.submit(
+                new Runnable() {
+                    @Override
+                    public void run() {
 
-                try {
-                    sw.remoteStopPressed(ApplicationController.instanceInfo);
-                    currentState = stopPressedState;
-                    currentState.execute();
-                } catch (RemoteException e) {
+                        try {
+                            sw.remoteStopPressed(ApplicationController.instanceInfo);
+                            currentState = stopPressedState;
+                            currentState.execute();
+                        } catch (RemoteException e) {
 
-                }
-            }
-        }).start();
+                        }
+                    }
+                });
     }
 
     @Override

@@ -22,7 +22,7 @@ public class RMIClient implements Client {
     transient ApplicationController context;
     public InstanceInfo instanceInfo;
     transient ArrayList<ServerDecorator> servers;
-    transient boolean shutdown, shutdownComplete;
+    transient boolean shutdown;
 
     public RMIClient(ApplicationController context) throws RemoteException {
 

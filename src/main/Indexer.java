@@ -7,11 +7,14 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Enumeration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Indexer {
 
     public static final Integer INDEXER_PORT = 1100;
     public static final String INDEXER_OBJECT_NAME = "Index";
+    public static ExecutorService networkThreadPool;
 
     public static void main(String[] args) {
         String ip = "192.168.29.153"; // Test IP
@@ -53,6 +56,8 @@ public class Indexer {
         if(System.getSecurityManager() == null)
             System.setSecurityManager(new SecurityManager());
 
+        networkThreadPool = Executors.newFixedThreadPool(25);
+
         Registry registry = null;
         try {
             registry = LocateRegistry.createRegistry(INDEXER_PORT);
@@ -74,7 +79,7 @@ public class Indexer {
                     while(true) {
                         try {
                             indexServer.filterInactivePeers();
-                            Thread.sleep(2000);
+                            Thread.sleep(6000);
                         } catch (RemoteException e) {
                         } catch (InterruptedException e) {
                         }

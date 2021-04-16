@@ -1,5 +1,6 @@
 package rmi.indexer;
 
+import main.Indexer;
 import main.InstanceInfo;
 import rmi.client.Client;
 
@@ -23,18 +24,18 @@ public class IndexServerImpl implements IndexServer {
         activePeers.removeIf(peerDecorator -> peerDecorator.getInstanceInfo().getInstanceIdentifier().equals(peerInfo.getInstanceIdentifier()));
 
         activePeers.add(new PeerDecorator(client, peerInfo));
-        for(PeerDecorator peer: activePeers) {
+        for (PeerDecorator peer : activePeers) {
+            Indexer.networkThreadPool.submit(
+                    new Runnable() {
+                        @Override
+                        public void run() {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    try {
-                        peer.getClient().onNewPeer(peerInfo);
-                    } catch (RemoteException ignored) {
-                    }
-                }
-            }).start();
+                            try {
+                                peer.getClient().onNewPeer(peerInfo);
+                            } catch (RemoteException ignored) {
+                            }
+                        }
+                    });
         }
 
         printPeers();
@@ -42,14 +43,14 @@ public class IndexServerImpl implements IndexServer {
 
     @Override
     public void unRegisterPeer(InstanceInfo peerInfo) throws RemoteException {
-        activePeers.removeIf(peerDecorator ->  peerDecorator.getInstanceInfo().getInstanceIdentifier().equals(peerInfo.getInstanceIdentifier()));
+        activePeers.removeIf(peerDecorator -> peerDecorator.getInstanceInfo().getInstanceIdentifier().equals(peerInfo.getInstanceIdentifier()));
         printPeers();
     }
 
     @Override
     public List<InstanceInfo> getAllPeers() throws RemoteException {
         ArrayList<InstanceInfo> peerInfos = new ArrayList<>();
-        for (PeerDecorator peerDecorator: activePeers)
+        for (PeerDecorator peerDecorator : activePeers)
             peerInfos.add(peerDecorator.getInstanceInfo());
 
         return peerInfos;
@@ -60,8 +61,7 @@ public class IndexServerImpl implements IndexServer {
 
         ArrayList<PeerDecorator> inactivePeers = new ArrayList<>();
         ArrayList<Thread> inactiveDetectorThread = new ArrayList<>();
-        for(PeerDecorator peer: activePeers)
-        {
+        for (PeerDecorator peer : activePeers) {
 
             Thread thread = new Thread(new Runnable() {
                 @Override
@@ -70,10 +70,10 @@ public class IndexServerImpl implements IndexServer {
                     try {
                         peer.getClient().onPing();
                     } catch (RemoteException e) {
-                        try { unRegisterPeer(peer.getInstanceInfo());
+                        try {
+                            unRegisterPeer(peer.getInstanceInfo());
                             inactivePeers.add(peer);
-                        }
-                        catch (RemoteException ignored) {
+                        } catch (RemoteException ignored) {
                         }
                     }
                 }
@@ -82,37 +82,34 @@ public class IndexServerImpl implements IndexServer {
             inactiveDetectorThread.add(thread);
         }
 
-        for(Thread thread: inactiveDetectorThread)
-        {
+        for (Thread thread : inactiveDetectorThread) {
             try {
                 thread.join();
             } catch (InterruptedException e) {
             }
         }
 
-        for(PeerDecorator inactivePeer: inactivePeers) {
+        for (PeerDecorator inactivePeer : inactivePeers) {
             for (PeerDecorator activePeer : activePeers) {
+                Indexer.networkThreadPool.submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    activePeer.getClient().onPeerClose(inactivePeer.getInstanceInfo());
+                                } catch (RemoteException ignored) {
+                                }
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            activePeer.getClient().onPeerClose(inactivePeer.getInstanceInfo());
-                        } catch (RemoteException ignored) {
-                        }
-
-                    }
-                }).start();
+                            }
+                        });
             }
         }
 
     }
 
-    public void printPeers()
-    {
+    public void printPeers() {
         System.out.println("\nPeers: ");
-        for (PeerDecorator peerDecorator: activePeers)
-        {
+        for (PeerDecorator peerDecorator : activePeers) {
             System.out.print(peerDecorator.getInstanceInfo().getInstanceIdentifier() + "\t");
         }
 
