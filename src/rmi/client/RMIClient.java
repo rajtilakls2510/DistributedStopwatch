@@ -52,6 +52,7 @@ public class RMIClient implements Client {
 
         } catch (RemoteException e) {
             System.out.println("Couldn't get index server registry.");
+            e.printStackTrace();
         } catch (NotBoundException e) {
             System.out.println("Couldn't get index server object.");
         }
@@ -104,6 +105,11 @@ public class RMIClient implements Client {
     }
 
     @Override
+    public void onPeerClose(InstanceInfo peerInfo) throws RemoteException {
+        context.removeRemoteVirtualStopwatch(peerInfo);
+    }
+
+    @Override
     public void onTimeUpdated(long time, InstanceInfo serverInfo) throws RemoteException {
         context.notifyVirtualStopwatchTimeUpdated(time, serverInfo);
     }
@@ -122,6 +128,10 @@ public class RMIClient implements Client {
     public void onServerShutdown(InstanceInfo serverInfo) throws RemoteException {
         servers.removeIf(server -> server.getInstanceInfo().getInstanceIdentifier().equals(serverInfo.getInstanceIdentifier()));
         context.removeRemoteVirtualStopwatch(serverInfo);
+    }
+
+    @Override
+    public void onPing() throws RemoteException {
     }
 
     public void shutdown() {

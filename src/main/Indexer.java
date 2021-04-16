@@ -48,6 +48,7 @@ public class Indexer {
 
         System.setProperty("java.rmi.server.hostname", ip);
         System.setProperty("java.security.policy", "all.policy");
+        System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000");
 
         if(System.getSecurityManager() == null)
             System.setSecurityManager(new SecurityManager());
@@ -67,6 +68,19 @@ public class Indexer {
         try {
             IndexServerImpl indexServer = new IndexServerImpl();
             registry.rebind(INDEXER_OBJECT_NAME, indexServer);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true) {
+                        try {
+                            indexServer.filterInactivePeers();
+                            Thread.sleep(2000);
+                        } catch (RemoteException e) {
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                }
+            }).start();
         } catch (RemoteException e) {
             System.out.println("Couldn't create index server");
         }

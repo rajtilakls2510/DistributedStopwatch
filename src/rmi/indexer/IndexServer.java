@@ -15,4 +15,6 @@ public interface IndexServer extends Remote {
 
     List<InstanceInfo> getAllPeers() throws RemoteException;
 
+    void filterInactivePeers() throws RemoteException;
+
 }

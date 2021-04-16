@@ -82,6 +82,7 @@ public class ApplicationController {
         stopwatchView.displayIP(instanceInfo);
         System.setProperty("java.rmi.server.hostname", instanceInfo.getHostIP());
         System.setProperty("java.security.policy", "all.policy");
+        System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000");
 
         if(System.getSecurityManager() == null)
             System.setSecurityManager(new SecurityManager());

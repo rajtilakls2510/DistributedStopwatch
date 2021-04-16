@@ -15,4 +15,8 @@ public interface Client extends Remote {
     void onServerShutdown(InstanceInfo serverInfo) throws RemoteException;
 
     void onNewPeer(InstanceInfo peerInfo) throws RemoteException;
+
+    void onPeerClose(InstanceInfo peerInfo) throws RemoteException;
+
+    void onPing() throws RemoteException;
 }

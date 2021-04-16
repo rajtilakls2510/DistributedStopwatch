@@ -49,22 +49,34 @@ public class RemoteStopwatch implements VirtualStopwatch {
 
     @Override
     public void startPauseResume() {
-        try {
-            sw.remoteStartPressed(ApplicationController.instanceInfo);
-            currentState.execute();
-        } catch (RemoteException e) {
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    sw.remoteStartPressed(ApplicationController.instanceInfo);
+                    currentState.execute();
+                } catch (RemoteException e) {
+                }
+            }
+        }).start();
     }
 
     @Override
     public void stop() {
-        try {
-            sw.remoteStopPressed(ApplicationController.instanceInfo);
-            currentState = stopPressedState;
-            currentState.execute();
-        } catch (RemoteException e) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        }
+                try {
+                    sw.remoteStopPressed(ApplicationController.instanceInfo);
+                    currentState = stopPressedState;
+                    currentState.execute();
+                } catch (RemoteException e) {
+
+                }
+            }
+        }).start();
     }
 
     @Override

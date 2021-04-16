@@ -23,13 +23,20 @@ public class IndexServerImpl implements IndexServer {
         activePeers.removeIf(peerDecorator -> peerDecorator.getInstanceInfo().getInstanceIdentifier().equals(peerInfo.getInstanceIdentifier()));
 
         activePeers.add(new PeerDecorator(client, peerInfo));
-        if(activePeers.size()>0)
-        {
-            for(PeerDecorator peer: activePeers)
-            {
-                peer.getClient().onNewPeer(peerInfo);
-            }
+        for(PeerDecorator peer: activePeers) {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        peer.getClient().onNewPeer(peerInfo);
+                    } catch (RemoteException ignored) {
+                    }
+                }
+            }).start();
         }
+
         printPeers();
     }
 
@@ -46,6 +53,59 @@ public class IndexServerImpl implements IndexServer {
             peerInfos.add(peerDecorator.getInstanceInfo());
 
         return peerInfos;
+    }
+
+    @Override
+    public void filterInactivePeers() throws RemoteException {
+
+        ArrayList<PeerDecorator> inactivePeers = new ArrayList<>();
+        ArrayList<Thread> inactiveDetectorThread = new ArrayList<>();
+        for(PeerDecorator peer: activePeers)
+        {
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        peer.getClient().onPing();
+                    } catch (RemoteException e) {
+                        try { unRegisterPeer(peer.getInstanceInfo());
+                            inactivePeers.add(peer);
+                        }
+                        catch (RemoteException ignored) {
+                        }
+                    }
+                }
+            });
+            thread.start();
+            inactiveDetectorThread.add(thread);
+        }
+
+        for(Thread thread: inactiveDetectorThread)
+        {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+            }
+        }
+
+        for(PeerDecorator inactivePeer: inactivePeers) {
+            for (PeerDecorator activePeer : activePeers) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            activePeer.getClient().onPeerClose(inactivePeer.getInstanceInfo());
+                        } catch (RemoteException ignored) {
+                        }
+
+                    }
+                }).start();
+            }
+        }
+
     }
 
     public void printPeers()
