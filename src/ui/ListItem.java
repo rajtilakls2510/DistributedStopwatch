@@ -24,8 +24,8 @@ public class ListItem {
 
     public ListItem(InstanceInfo instanceInfo) {
         this.instanceInfo = instanceInfo;
-        instanceIpDisplay = new JLabel("IP: "+instanceInfo.getHostIP());
-        instanceIdentifierDisplay = new JLabel("ID: "+instanceInfo.getInstanceIdentifier());
+        instanceIpDisplay = new JLabel("IP: " + instanceInfo.getHostIP());
+        instanceIdentifierDisplay = new JLabel("ID: " + instanceInfo.getInstanceIdentifier());
         timerDisplay = new JLabel();
         start = new JButton("Start");
         stop = new JButton("Stop");
@@ -80,33 +80,34 @@ public class ListItem {
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
         panel.setLayout(layout);
-//        panel.setPreferredSize(new Dimension(500, 50));
 
         Font font = timerDisplay.getFont();
         timerDisplay.setFont(new Font(font.getFontName(), font.getStyle(), 16));
+        timerDisplay.setHorizontalAlignment(JLabel.CENTER);
 
         stop.setVisible(false);
 
-        JPanel infoPanel = new JPanel();
-//        infoPanel.setPreferredSize(new Dimension(50,50));
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-
-        infoPanel.add(instanceIpDisplay);
-        infoPanel.add(instanceIdentifierDisplay);
-
         layout.setHorizontalGroup(
                 layout.createSequentialGroup()
-                        .addComponent(infoPanel)
-                        .addComponent(timerDisplay)
+                        .addGroup(
+                                layout.createParallelGroup()
+                                        .addComponent(instanceIpDisplay)
+                                        .addComponent(instanceIdentifierDisplay)
+                        )
+                        .addComponent(timerDisplay,0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(start)
                         .addComponent(stop)
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(infoPanel)
-                        .addComponent(timerDisplay)
-                        .addComponent(start)
-                        .addComponent(stop)
+                layout.createSequentialGroup()
+                        .addGroup(
+                                layout.createParallelGroup()
+                                        .addComponent(instanceIpDisplay)
+                                        .addComponent(timerDisplay)
+                                        .addComponent(start)
+                                        .addComponent(stop)
+                        )
+                        .addComponent(instanceIdentifierDisplay)
         );
 
     }
@@ -142,8 +143,7 @@ public class ListItem {
         return stop;
     }
 
-    public InstanceInfo getInstanceInfo()
-    {
+    public InstanceInfo getInstanceInfo() {
         return instanceInfo;
     }
 
