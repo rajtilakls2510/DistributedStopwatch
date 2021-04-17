@@ -51,7 +51,8 @@ If the registration was successful, all the Applications registered to that serv
 - Follow the same process to start the other applications in other machines. But this time you don't need to start any 
   Index Server as one is already running. Just register your application to the Index Server and it will give you the stopwatches 
   of all applications present on the network registered to that Index Server.
-  
-<img src="https://github.com/rajtilakls2510/DistributedStopwatch/blob/master/diagrams/Demo%20Image.png?raw=true">
 
 ##### Note: You can start multiple instances of the Application on a single machine as every time you start the Application, it will be assigned a new ID
+
+<img src="https://github.com/rajtilakls2510/DistributedStopwatch/blob/master/diagrams/Demo%20Image.png?raw=true">
+
