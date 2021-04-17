@@ -4,10 +4,21 @@ import java.io.Serializable;
 
 public class InstanceInfo implements Serializable {
 
+    /**
+     * Instance Info class is responsible for holding the information about the current instance.
+     */
 
+
+    // Identifier for a particular instance
     private String instanceIdentifier;
+
+    // IP for the machine
     private String hostIP;
+
+    // ServerName is the name used by remote clients to get the stub of this application's server from the RMI Registry
     private String serverName;
+
+    // Similar to ServerName
     private String clientName;
 
     public InstanceInfo(String instanceIdentifier) {
