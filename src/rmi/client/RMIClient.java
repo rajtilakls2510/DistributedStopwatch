@@ -97,7 +97,7 @@ public class RMIClient implements Client {
      */
     void addServer(InstanceInfo instanceInfo) throws RemoteException {
         if (!shutdown) {
-            Registry registry = LocateRegistry.getRegistry(instanceInfo.getHostIP(), 1099);
+            Registry registry = LocateRegistry.getRegistry(instanceInfo.getHostIP(), InstanceInfo.RMI_PORT);
 
             try {
                 // Getting the remote server object

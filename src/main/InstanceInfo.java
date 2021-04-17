@@ -20,6 +20,9 @@ public class InstanceInfo implements Serializable {
     // Similar to ServerName
     private String clientName;
 
+    // RMI Port for all instances
+    public static Integer RMI_PORT=1099;
+
     public InstanceInfo(String instanceIdentifier) {
         this.instanceIdentifier = instanceIdentifier;
         hostIP = "";

@@ -163,9 +163,9 @@ public class ApplicationController {
             server = new RMIServer(context);
             Registry registry;
             try {
-                registry = LocateRegistry.createRegistry(1099);
+                registry = LocateRegistry.createRegistry(InstanceInfo.RMI_PORT);
             } catch (RemoteException e) {
-                registry = LocateRegistry.getRegistry(instanceInfo.getHostIP(), 1099);
+                registry = LocateRegistry.getRegistry(instanceInfo.getHostIP(), InstanceInfo.RMI_PORT);
             }
             registry.rebind(instanceInfo.getServerName(), server);
         } catch (RemoteException e) {
