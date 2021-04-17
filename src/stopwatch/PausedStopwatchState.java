@@ -1,6 +1,11 @@
 package stopwatch;
 
 public class PausedStopwatchState implements StopwatchState {
+
+    /**
+     * The Stopwatch is in this state when the Pause button is pressed
+     */
+
     Stopwatch stopwatch;
     StopwatchUIUpdater stopwatchUIUpdater;
     String name;
@@ -24,6 +29,8 @@ public class PausedStopwatchState implements StopwatchState {
     @Override
     public void changeState() {
         stopwatch.setPreviousState(this);
+
+        // Changes to RunningState
         stopwatch.setState(stopwatch.getRunningState());
     }
 
