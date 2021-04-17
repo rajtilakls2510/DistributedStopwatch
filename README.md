@@ -54,4 +54,4 @@ If the registration was successful, all the Applications registered to that serv
   
 <img src="https://github.com/rajtilakls2510/DistributedStopwatch/blob/master/diagrams/Demo%20Image.png?raw=true">
 
-
+##### Note: You can start multiple instances of the Application on a single machine as every time you start the Application, it will be assigned a new ID
