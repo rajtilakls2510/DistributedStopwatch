@@ -43,7 +43,7 @@ It's just a normal stopwatch and you can very well control it.
   
 - Go back to the Application and type the Index Server IP in the field and hit `Select` button. 
 If the registration was successful, all the Applications registered to that server will automatically appear in the 
-  Remote Stopwatches section. But if this is the only Application registered to the Index Server, the Remote Stopwatches 
+  Remote Stopwatches section. But if this is the only one Application registered to the Index Server, the Remote Stopwatches 
   field will be blank as mine.
   
 <img src="https://github.com/rajtilakls2510/DistributedStopwatch/blob/master/diagrams/Just%20Bound.png?raw=true">
