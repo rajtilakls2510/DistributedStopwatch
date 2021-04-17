@@ -8,7 +8,6 @@ public class InstanceInfo implements Serializable {
      * Instance Info class is responsible for holding the information about the current instance.
      */
 
-
     // Identifier for a particular instance
     private String instanceIdentifier;
 
@@ -23,16 +22,16 @@ public class InstanceInfo implements Serializable {
 
     public InstanceInfo(String instanceIdentifier) {
         this.instanceIdentifier = instanceIdentifier;
-        hostIP="";
-        serverName = "SERVER:"+instanceIdentifier;
-        clientName = "CLIENT:"+instanceIdentifier;
+        hostIP = "";
+        serverName = "SERVER:" + instanceIdentifier;
+        clientName = "CLIENT:" + instanceIdentifier;
     }
 
     public InstanceInfo(String instanceIdentifier, String hostIP) {
         this.instanceIdentifier = instanceIdentifier;
         this.hostIP = hostIP;
-        serverName = "SERVER:"+instanceIdentifier;
-        clientName = "CLIENT:"+instanceIdentifier;
+        serverName = "SERVER:" + instanceIdentifier;
+        clientName = "CLIENT:" + instanceIdentifier;
     }
 
     public String getInstanceIdentifier() {

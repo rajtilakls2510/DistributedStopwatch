@@ -12,17 +12,30 @@ import java.rmi.RemoteException;
 
 public class ListItem {
 
+    /**
+     * ListItem holds a Stopwatch and the GUI elements that are to be displayed on the JFrame.
+     */
+
+    // Stopwatch
     public VirtualStopwatch stopwatch;
+
+    // The UI Updater
     StopwatchUIUpdater uiUpdater;
+
+    // UI Widgets
     JPanel panel;
     JLabel instanceIpDisplay;
     JLabel instanceIdentifierDisplay;
     JLabel timerDisplay;
     JButton start;
     JButton stop;
+
+    // Instance Info for the particular Stopwatch
     InstanceInfo instanceInfo;
 
     public ListItem(InstanceInfo instanceInfo) {
+
+        // Initializing all objects
         this.instanceInfo = instanceInfo;
         instanceIpDisplay = new JLabel("IP: " + instanceInfo.getHostIP());
         instanceIdentifierDisplay = new JLabel("ID: " + instanceInfo.getInstanceIdentifier());
@@ -33,6 +46,8 @@ public class ListItem {
 
         setUpPanel();
         addButtonListeners();
+
+        // Creating the UI Updater
         uiUpdater = new StopwatchUIUpdater() {
             @Override
             public void onStart() {
@@ -67,6 +82,11 @@ public class ListItem {
 
     }
 
+    /**
+     * This method sets the stopwatch for this list item along with its UI Updater.
+     *
+     * @param stopwatch
+     */
     public void setStopwatch(VirtualStopwatch stopwatch) {
         this.stopwatch = stopwatch;
         try {
@@ -94,7 +114,7 @@ public class ListItem {
                                         .addComponent(instanceIpDisplay)
                                         .addComponent(instanceIdentifierDisplay)
                         )
-                        .addComponent(timerDisplay,0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(timerDisplay, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(start)
                         .addComponent(stop)
         );
@@ -147,6 +167,9 @@ public class ListItem {
         return instanceInfo;
     }
 
+    /**
+     * This method handles the Start button pressed event
+     */
     private void handleStartPress() {
         try {
             stopwatch.startPauseResume();
@@ -155,6 +178,9 @@ public class ListItem {
 
     }
 
+    /**
+     * This method handles the Stop button pressed event
+     */
     private void handleStopPress() {
         try {
             stopwatch.stop();

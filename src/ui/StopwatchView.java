@@ -2,8 +2,8 @@ package ui;
 
 import main.ApplicationController;
 import main.InstanceInfo;
-import stopwatch.VirtualStopwatch;
 import stopwatch.Stopwatch;
+import stopwatch.VirtualStopwatch;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +14,10 @@ import java.rmi.RemoteException;
 
 public class StopwatchView {
 
+    /**
+     * StopwatchView is the class responsible for displaying the GUI of this application.
+     */
+
     ApplicationController context;
     public ListView<ListItem> listView;
     JFrame frame;
@@ -21,8 +25,9 @@ public class StopwatchView {
     JLabel remoteStopwatch;
     JTextField indexerIpField;
     JScrollPane scrollPane;
-    public ListItem ownerListStopwatchItem;
 
+    // Owner Stopwatch
+    public ListItem ownerListStopwatchItem;
 
     public StopwatchView(ApplicationController context) {
         this.context = context;
@@ -51,7 +56,6 @@ public class StopwatchView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-
     public void setUpPanels() {
 
         panel1 = new JPanel();
@@ -68,7 +72,7 @@ public class StopwatchView {
         panelIndexer = new JPanel();
         panelIndexer.setLayout(new FlowLayout(FlowLayout.LEFT));
         JLabel hintLabel = new JLabel("Index Server IP: ");
-        indexerIpField = new JTextField(ApplicationController.indexServerIp,14);
+        indexerIpField = new JTextField(ApplicationController.indexServerIp, 14);
         JButton indexerSelectButton = new JButton("Select");
         indexerSelectButton.addActionListener(new ActionListener() {
             @Override
@@ -80,7 +84,6 @@ public class StopwatchView {
         panelIndexer.add(hintLabel);
         panelIndexer.add(indexerIpField);
         panelIndexer.add(indexerSelectButton);
-
 
         panel3 = new JPanel();
         panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
@@ -101,8 +104,10 @@ public class StopwatchView {
         frame.setVisible(true);
     }
 
-    public void handleNewIndexServerIp()
-    {
+    /**
+     * This method is responsible for registering to a new Index Server when the Select button is pressed with a new Index Server IP
+     */
+    public void handleNewIndexServerIp() {
         ApplicationController.indexServerIp = indexerIpField.getText();
         new Thread(new Runnable() {
             @Override
@@ -114,15 +119,26 @@ public class StopwatchView {
 
     }
 
-    public void displayIP(InstanceInfo instanceInfo){
-        ownerListStopwatchItem.instanceIdentifierDisplay.setText("Your ID: "+instanceInfo.getInstanceIdentifier());
-        ownerListStopwatchItem.instanceIpDisplay.setText("Your IP: "+instanceInfo.getHostIP());
+    /**
+     * Method responsible for displaying the IP and ID of this application when they are ready
+     *
+     * @param instanceInfo
+     */
+    public void displayInstanceInfo(InstanceInfo instanceInfo) {
+        ownerListStopwatchItem.instanceIdentifierDisplay.setText("Your ID: " + instanceInfo.getInstanceIdentifier());
+        ownerListStopwatchItem.instanceIpDisplay.setText("Your IP: " + instanceInfo.getHostIP());
     }
 
     public Stopwatch getOwnerStopwatch() {
         return (Stopwatch) ownerListStopwatchItem.stopwatch;
     }
 
+    /**
+     * This method adds a new virtual stopwatch to the list when one is received from another instance
+     *
+     * @param virtualStopwatch
+     * @param serverInfo
+     */
     public void addRemoteStopwatch(VirtualStopwatch virtualStopwatch, InstanceInfo serverInfo) {
         ListItem newItem = new ListItem(serverInfo);
         newItem.setStopwatch(virtualStopwatch);
@@ -132,6 +148,12 @@ public class StopwatchView {
         panel3.repaint();
         setFrameVisible();
     }
+
+    /**
+     * This method removes a virtual Stopwatch from the list
+     *
+     * @param serverInfo
+     */
     public void removeRemoteVirtualStopwatch(InstanceInfo serverInfo) {
 
         ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
@@ -145,6 +167,12 @@ public class StopwatchView {
         setFrameVisible();
     }
 
+    /**
+     * This method gets the list item using the instance information
+     *
+     * @param serverInfo
+     * @return ListItem
+     */
     ListItem getVirtualStopwatchListItemByIdentifier(InstanceInfo serverInfo) {
         for (ListItem item : listView.items) {
             if (item.getInstanceInfo().getInstanceIdentifier().equals(serverInfo.getInstanceIdentifier()))
@@ -153,6 +181,12 @@ public class StopwatchView {
         return null;
     }
 
+    /**
+     * When a new time is received for a stopwatch, it is displayed using the instance info
+     *
+     * @param time
+     * @param serverInfo
+     */
     public void notifyVirtualStopwatchTimeUpdated(long time, InstanceInfo serverInfo) {
         ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
         if (virtualStopwatchListItem != null) {
@@ -163,6 +197,11 @@ public class StopwatchView {
         }
     }
 
+    /**
+     * When the start button for remote stopwatch is pressed, this method is called to update the UI
+     *
+     * @param serverInfo
+     */
     public void notifyVirtualStopwatchStartPressed(InstanceInfo serverInfo) {
         ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
         if (virtualStopwatchListItem != null) {
@@ -173,6 +212,11 @@ public class StopwatchView {
         }
     }
 
+    /**
+     * When the stop button for remote stopwatch is pressed, this method is called to update the UI
+     *
+     * @param serverInfo
+     */
     public void notifyVirtualStopwatchStopPressed(InstanceInfo serverInfo) {
         ListItem virtualStopwatchListItem = getVirtualStopwatchListItemByIdentifier(serverInfo);
         if (virtualStopwatchListItem != null) {
@@ -183,11 +227,16 @@ public class StopwatchView {
         }
     }
 
+    /**
+     * This method is responsible for doing the clean up tasks when the user closes the application
+     */
     private void doCleanup() {
         try {
             ownerListStopwatchItem.stopwatch.stop();
         } catch (RemoteException e) {
         }
+
+        // Asks the application controller to stop the server and client and close itself
         context.cleanUp();
     }
 }

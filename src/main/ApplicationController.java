@@ -48,7 +48,6 @@ public class ApplicationController {
     public RMIServer server;
     public RMIClient client;
 
-
     public static void main(String[] args) {
         System.out.println("Starting Stopwatch Please Wait....");
 
@@ -98,7 +97,6 @@ public class ApplicationController {
     /**
      * This method is responsible for detecting the current machine's IP address.
      * This method is capable of detecting one IP address if there are multiple network interfaces present.
-     *
      */
     String detectLocalHostIp() {
         String ip = "";
@@ -155,7 +153,7 @@ public class ApplicationController {
         // Display the Instance Information.
         System.out.println("Identifier: " + instanceInfo.getInstanceIdentifier());
         System.out.println("IP: " + instanceInfo.getHostIP());
-        stopwatchView.displayIP(instanceInfo);
+        stopwatchView.displayInstanceInfo(instanceInfo);
 
         // Set RMI configuration and Security
         setConfiguration();
@@ -189,6 +187,7 @@ public class ApplicationController {
 
     /**
      * This method is used for registering the Application to a new Index Server
+     *
      * @param indexServerIp
      */
     public void startClientWithIndexServer(String indexServerIp) {
@@ -254,7 +253,6 @@ public class ApplicationController {
     public void notifyVirtualStopwatchStopPressed(InstanceInfo serverInfo) {
         stopwatchView.notifyVirtualStopwatchStopPressed(serverInfo);
     }
-
 
 }
 

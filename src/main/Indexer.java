@@ -2,7 +2,10 @@ package main;
 
 import rmi.indexer.IndexServerImpl;
 
-import java.net.*;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -28,12 +31,10 @@ public class Indexer {
         If one argument is passed, it is taken as the localhost IP (Meant to be a backdoor to
         setting the localhost ip if the localhost ip detector is not working)
          */
-        if(args.length>0)
-        {
-            ip=args[0];
-        }
-        else {
-            ip=detectLocalHostIp();
+        if (args.length > 0) {
+            ip = args[0];
+        } else {
+            ip = detectLocalHostIp();
         }
 
         // Setting the configuration for the Server
@@ -64,7 +65,7 @@ public class Indexer {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while(true) {
+                    while (true) {
                         try {
                             indexServer.filterInactivePeers();
                             Thread.sleep(6000);
@@ -78,19 +79,17 @@ public class Indexer {
             System.out.println("Couldn't create index server");
         }
         System.out.println("Index Server Started");
-        System.out.println("IP: "+ip);
-        while(true){}
+        System.out.println("IP: " + ip);
+        while (true) {
+        }
     }
-
 
     /**
      * This method is responsible for detecting the current machine's IP address.
      * This method is capable of detecting one IP address if there are multiple network interfaces present.
-     *
      */
-    static String detectLocalHostIp()
-    {
-        String ip="";
+    static String detectLocalHostIp() {
+        String ip = "";
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
@@ -117,8 +116,7 @@ public class Indexer {
         return ip;
     }
 
-    static void setConfiguration(String ip)
-    {
+    static void setConfiguration(String ip) {
         // Setting the LocalHostIP as the hostname
         System.setProperty("java.rmi.server.hostname", ip);
 
