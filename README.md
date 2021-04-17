@@ -5,7 +5,7 @@
 <img src="https://github.com/rajtilakls2510/DistributedStopwatch/blob/master/diagrams/Demo%20Image.png?raw=true">
 
 #### Description
-How cool will be to control one machine from another when they are on LAN? 
+How cool will it be to control one machine from another when they are on LAN? 
 This Application tries to simulate that using a Stopwatch. 
 This Application let's you remotely control another stopwatch present on another 
 computer on the LAN (Of course, you can control your own stopwatch). Since, this application is made 
