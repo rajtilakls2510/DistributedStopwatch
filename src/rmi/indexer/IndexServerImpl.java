@@ -11,12 +11,21 @@ import java.util.List;
 
 public class IndexServerImpl implements IndexServer {
 
+    /**
+     * IndexServerImpl provides the implementation for IndexServer interface.
+     * <p>
+     * This class is responsible for storing the information about the peers registered to it.
+     */
+
+    // List of all active peers
     private ArrayList<PeerDecorator> activePeers;
 
     public IndexServerImpl() throws RemoteException {
         activePeers = new ArrayList<>();
         UnicastRemoteObject.exportObject(this, 0);
     }
+
+    // <------------------------------- Interface methods ------------------------->
 
     @Override
     public void registerPeer(Client client, InstanceInfo peerInfo) throws RemoteException {
@@ -56,11 +65,16 @@ public class IndexServerImpl implements IndexServer {
         return peerInfos;
     }
 
-    @Override
-    public void filterInactivePeers() throws RemoteException {
+    /**
+     * This method is used for garbage collection. This method pings the peers and filters the inactive peers and notifies
+     * all active clients about the inactive peers.
+     */
+    public void filterInactivePeers() {
 
         ArrayList<PeerDecorator> inactivePeers = new ArrayList<>();
         ArrayList<Thread> inactiveDetectorThread = new ArrayList<>();
+
+        // Ping all Peers present in the server
         for (PeerDecorator peer : activePeers) {
 
             Thread thread = new Thread(new Runnable() {
@@ -82,6 +96,7 @@ public class IndexServerImpl implements IndexServer {
             inactiveDetectorThread.add(thread);
         }
 
+        // Wait for all the responses to come
         for (Thread thread : inactiveDetectorThread) {
             try {
                 thread.join();
@@ -89,6 +104,7 @@ public class IndexServerImpl implements IndexServer {
             }
         }
 
+        // Notify all active peers about the inactive peers
         for (PeerDecorator inactivePeer : inactivePeers) {
             for (PeerDecorator activePeer : activePeers) {
                 Indexer.networkThreadPool.submit(

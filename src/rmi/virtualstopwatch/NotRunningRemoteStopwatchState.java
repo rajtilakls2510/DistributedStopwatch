@@ -2,26 +2,30 @@ package rmi.virtualstopwatch;
 
 import stopwatch.StopwatchUIUpdater;
 
-public class InitializerVirtualStopwatchState implements VirtualStopwatchState {
+public class NotRunningRemoteStopwatchState implements RemoteStopwatchState {
+
+    /**
+     * The RemoteStopwatch is in this state when the stop button was pressed or not started at all
+     */
+
     RemoteStopwatch stopwatch;
     StopwatchUIUpdater stopwatchUIUpdater;
     String name;
 
-    public InitializerVirtualStopwatchState(RemoteStopwatch stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
+    public NotRunningRemoteStopwatchState(RemoteStopwatch stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
         this.stopwatch = stopwatch;
         this.stopwatchUIUpdater = stopwatchUIUpdater;
         this.name = name;
     }
 
-
     @Override
     public void handleUI() {
-        stopwatchUIUpdater.onStop();
+        stopwatchUIUpdater.onStart();
     }
 
     @Override
     public void changeState() {
-        stopwatch.setState(stopwatch.getNotRunningState());
+        stopwatch.setState(stopwatch.getRunningState());
     }
 
     @Override

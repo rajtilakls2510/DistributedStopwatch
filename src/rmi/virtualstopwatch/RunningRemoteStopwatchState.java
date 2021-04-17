@@ -2,12 +2,17 @@ package rmi.virtualstopwatch;
 
 import stopwatch.StopwatchUIUpdater;
 
-public class RunningVirtualStopwatchState implements VirtualStopwatchState {
+public class RunningRemoteStopwatchState implements RemoteStopwatchState {
+
+    /**
+     * The RemoteStopwatch is in this state when the Start/Resume button is pressed
+     */
+
     RemoteStopwatch stopwatch;
     StopwatchUIUpdater stopwatchUIUpdater;
     String name;
 
-    public RunningVirtualStopwatchState(RemoteStopwatch stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
+    public RunningRemoteStopwatchState(RemoteStopwatch stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
         this.stopwatch = stopwatch;
         this.stopwatchUIUpdater = stopwatchUIUpdater;
         this.name = name;

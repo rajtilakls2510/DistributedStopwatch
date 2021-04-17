@@ -1,17 +1,22 @@
 package rmi.server;
 
-import main.ApplicationController;
 import main.InstanceInfo;
+import stopwatch.Stopwatch;
 import stopwatch.StopwatchUIUpdater;
 import stopwatch.VirtualStopwatch;
-import stopwatch.Stopwatch;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class StopwatchDecoratorForServer implements VirtualStopwatch {
 
+    /**
+     * StopwatchDecoratorForServer is the decorator which holds the owner stopwatch of this instance.
+     * <p>
+     * This class is used to prevent the overhead of sending the member variables present in the stopwatch class
+     * to be transferred over the network. This decorator class is sent over the network instead of the Stopwatch class to
+     * prevent the member variables from being transferred over the network.
+     */
 
     transient Stopwatch sw;
 

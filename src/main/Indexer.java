@@ -66,10 +66,9 @@ public class Indexer {
                 @Override
                 public void run() {
                     while (true) {
+                        indexServer.filterInactivePeers();
                         try {
-                            indexServer.filterInactivePeers();
                             Thread.sleep(6000);
-                        } catch (RemoteException e) {
                         } catch (InterruptedException e) {
                         }
                     }
