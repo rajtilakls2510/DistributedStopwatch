@@ -1,18 +1,18 @@
-package rmi.virtualstopwatch;
+package rmi.remotestopwatch;
 
 import stopwatch.StopwatchUIUpdater;
 
-public class RunningRemoteStopwatchState implements RemoteStopwatchState {
+public class PausedRemoteStopwatchState implements RemoteStopwatchState {
 
     /**
-     * The RemoteStopwatch is in this state when the Start/Resume button is pressed
+     * The RemoteStopwatch is in this state when the Pause button is pressed
      */
 
     RemoteStopwatch stopwatch;
     StopwatchUIUpdater stopwatchUIUpdater;
     String name;
 
-    public RunningRemoteStopwatchState(RemoteStopwatch stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
+    public PausedRemoteStopwatchState(RemoteStopwatch stopwatch, StopwatchUIUpdater stopwatchUIUpdater, String name) {
         this.stopwatch = stopwatch;
         this.stopwatchUIUpdater = stopwatchUIUpdater;
         this.name = name;
@@ -20,12 +20,12 @@ public class RunningRemoteStopwatchState implements RemoteStopwatchState {
 
     @Override
     public void handleUI() {
-        stopwatchUIUpdater.onPause();
+        stopwatchUIUpdater.onResume();
     }
 
     @Override
     public void changeState() {
-        stopwatch.setState(stopwatch.getPausedState());
+        stopwatch.setCurrentState(stopwatch.getRunningState());
     }
 
     @Override

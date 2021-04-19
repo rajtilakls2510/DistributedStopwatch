@@ -18,7 +18,7 @@ public class PausedStopwatchState implements StopwatchState {
 
     @Override
     public void handleStopwatch() {
-        stopwatch.sw.start();
+        stopwatch.getStopwatchEngine().start();
     }
 
     @Override
@@ -31,7 +31,7 @@ public class PausedStopwatchState implements StopwatchState {
         stopwatch.setPreviousState(this);
 
         // Changes to RunningState
-        stopwatch.setState(stopwatch.getRunningState());
+        stopwatch.setCurrentState(stopwatch.getRunningState());
     }
 
     @Override

@@ -5,7 +5,7 @@ import main.Indexer;
 import main.InstanceInfo;
 import rmi.indexer.IndexServer;
 import rmi.server.Server;
-import rmi.virtualstopwatch.RemoteStopwatch;
+import rmi.remotestopwatch.RemoteStopwatch;
 import stopwatch.VirtualStopwatch;
 
 import java.rmi.NotBoundException;

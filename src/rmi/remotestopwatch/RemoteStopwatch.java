@@ -1,4 +1,4 @@
-package rmi.virtualstopwatch;
+package rmi.remotestopwatch;
 
 import main.ApplicationController;
 import main.InstanceInfo;
@@ -7,7 +7,7 @@ import stopwatch.VirtualStopwatch;
 
 import java.rmi.RemoteException;
 
-public class RemoteStopwatch implements VirtualStopwatch {
+public class RemoteStopwatch implements VirtualStopwatch, RemoteStopwatchState.RemoteStopwatchStateUser {
 
     /**
      * RemoteStopwatch is the class which decorates the Stopwatch object received from the server of another instance and helps the
@@ -156,7 +156,13 @@ public class RemoteStopwatch implements VirtualStopwatch {
 
     // <-------------------------------- State changer methods ------------------------------->
 
-    public void setState(RemoteStopwatchState stopwatchState) {
+    @Override
+    public RemoteStopwatchState getCurrentState() {
+        return currentState;
+    }
+
+    @Override
+    public void setCurrentState(RemoteStopwatchState stopwatchState) {
         currentState = stopwatchState;
     }
 
@@ -172,7 +178,4 @@ public class RemoteStopwatch implements VirtualStopwatch {
         return pausedState;
     }
 
-    public RemoteStopwatchState getCurrentState() {
-        return currentState;
-    }
 }

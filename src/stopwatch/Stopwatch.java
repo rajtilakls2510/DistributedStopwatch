@@ -5,7 +5,7 @@ import main.InstanceInfo;
 
 import java.rmi.RemoteException;
 
-public class Stopwatch implements Observer, VirtualStopwatch {
+public class Stopwatch implements Observer, VirtualStopwatch, StopwatchState.StopwatchStateUser {
 
     /**
      * Stopwatch is the class which uses the StopwatchEngine to provide higher level abstractions to let users to communicate with the StopwatchEngine
@@ -141,15 +141,38 @@ public class Stopwatch implements Observer, VirtualStopwatch {
 
     // <-------------------------------- State update helper methods --------------------------->
 
-    public void setState(StopwatchState stopwatchState) {
+    @Override
+    public StopwatchState getCurrentState() {
+        return currentState;
+    }
+
+    @Override
+    public void setCurrentState(StopwatchState stopwatchState) {
         currentState = stopwatchState;
     }
 
+    @Override
+    public StopwatchState getPreviousState() {
+        return previousState;
+    }
+
+    @Override
     public void setPreviousState(StopwatchState previousState) {
         this.previousState = previousState;
     }
 
-    public void setStopwatch(StopwatchEngine sw) {
+    @Override
+    public String getPreviousStateName() {
+        return previousState.getName();
+    }
+
+    @Override
+    public StopwatchEngine getStopwatchEngine() {
+        return sw;
+    }
+
+    @Override
+    public void setStopwatchEngine(StopwatchEngine sw) {
         this.sw = sw;
     }
 
@@ -163,18 +186,6 @@ public class Stopwatch implements Observer, VirtualStopwatch {
 
     public StopwatchState getPausedState() {
         return pausedState;
-    }
-
-    public StopwatchState getCurrentState() {
-        return currentState;
-    }
-
-    public StopwatchState getPreviousState() {
-        return previousState;
-    }
-
-    public String getPreviousStateName() {
-        return previousState.getName();
     }
 
 }

@@ -1,4 +1,4 @@
-package rmi.virtualstopwatch;
+package rmi.remotestopwatch;
 
 import stopwatch.StopwatchUIUpdater;
 
@@ -25,7 +25,7 @@ public class NotRunningRemoteStopwatchState implements RemoteStopwatchState {
 
     @Override
     public void changeState() {
-        stopwatch.setState(stopwatch.getRunningState());
+        stopwatch.setCurrentState(stopwatch.getRunningState());
     }
 
     @Override

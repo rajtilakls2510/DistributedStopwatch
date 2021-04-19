@@ -21,9 +21,9 @@ public class InitializerStopwatchState implements StopwatchState {
     public void handleStopwatch() {
 
         //  Discard the old stopwatch if present
-        if (stopwatch.sw != null)
-            stopwatch.sw.stop();
-        stopwatch.sw = null;
+        if (stopwatch.getStopwatchEngine() != null)
+            stopwatch.getStopwatchEngine().stop();
+        stopwatch.setStopwatchEngine(null);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class InitializerStopwatchState implements StopwatchState {
         stopwatch.setPreviousState(this);
 
         // Changes to NotRunningState
-        stopwatch.setState(stopwatch.getNotRunningState());
+        stopwatch.setCurrentState(stopwatch.getNotRunningState());
     }
 
     @Override

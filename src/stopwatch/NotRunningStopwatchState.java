@@ -21,7 +21,7 @@ public class NotRunningStopwatchState implements StopwatchState {
 
         // Creates a new stopwatch engine
         StopwatchEngine sw = new StopwatchEngine();
-        stopwatch.setStopwatch(sw);
+        stopwatch.setStopwatchEngine(sw);
         sw.registerObserver(stopwatch);
         sw.start();
     }
@@ -36,7 +36,7 @@ public class NotRunningStopwatchState implements StopwatchState {
         stopwatch.setPreviousState(this);
 
         // Changes to RunningState
-        stopwatch.setState(stopwatch.getRunningState());
+        stopwatch.setCurrentState(stopwatch.getRunningState());
     }
 
     @Override
