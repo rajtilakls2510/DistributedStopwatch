@@ -25,8 +25,8 @@ public interface RemoteStopwatchState {
 
 
         /**
-         * RemoteStopwatchStateUser is the interface which is used to provide some common functionality which the Individual StopwatchStates are going
-         * to use when implementing the State Pattern. Therefore, every Stopwatch class that wants to use the state pattern of StopwatchState must
+         * RemoteStopwatchStateUser is the interface which is used to provide some common functionality to the class (which the Individual StopwatchStates are going
+         * to use) when implementing the State Pattern. Therefore, every Stopwatch class that wants to use the state pattern of StopwatchState must
          * implement this nested interface.
          */
 
