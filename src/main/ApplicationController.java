@@ -14,6 +14,7 @@ import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.security.Policy;
 import java.util.Enumeration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -131,7 +132,7 @@ public class ApplicationController {
         System.setProperty("java.rmi.server.hostname", instanceInfo.getHostIP());
 
         // Setting the Security Policy File
-        System.setProperty("java.security.policy", "all.policy");
+        System.setProperty("java.security.policy", ApplicationController.class.getResource("resources/all.policy").toString());
 
         // Setting a timeout for Remote calls so that we don't wait forever to get the response
         System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000");

@@ -120,7 +120,7 @@ public class Indexer {
         System.setProperty("java.rmi.server.hostname", ip);
 
         // Setting the Security Policy File
-        System.setProperty("java.security.policy", "all.policy");
+        System.setProperty("java.security.policy", Indexer.class.getResource("resources/all.policy").toString());
 
         // Setting a timeout for Remote calls so that we don't wait forever to get the response
         System.setProperty("sun.rmi.transport.tcp.responseTimeout", "2000");
